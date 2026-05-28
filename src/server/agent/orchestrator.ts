@@ -1,12 +1,25 @@
-/**
- * Agent loop: pick tools → gather evidence → verdict + escalation meta-decision.
- * Uses Anthropic API with structured output; enforces charter soft policy.
- */
-import type { Investigation } from "@/types";
+import { buildScenarioInvestigation } from "./investigations";
+import { resolveEscalation } from "./escalation";
+import type { DemoScenarioId, Investigation } from "@/types";
 
-export async function runInvestigation(_input: {
+export interface RunInvestigationInput {
+  scenarioId: DemoScenarioId;
   alertId: string;
-  signal: string;
-}): Promise<Investigation> {
-  throw new Error("Not implemented — Phase 3");
+  placementId: string;
+  clientId: string;
+  exposureGbp?: number;
+  brandSafetyAmbiguous?: boolean;
+}
+
+export function runInvestigation(input: RunInvestigationInput): Investigation {
+  const investigation = buildScenarioInvestigation(input);
+  const { requiresHuman } = resolveEscalation(
+    investigation,
+    input.clientId,
+    {
+      exposureGbp: input.exposureGbp,
+      brandSafetyAmbiguous: input.brandSafetyAmbiguous,
+    },
+  );
+  return { ...investigation, requiresHuman };
 }

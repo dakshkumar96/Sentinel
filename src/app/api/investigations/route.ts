@@ -1,7 +1,15 @@
-/**
- * POST — start agent investigation for an alert/signal.
- * Phase 3: wire to src/server/agent/orchestrator.ts
- */
-export async function POST() {
-  return Response.json({ error: "Not implemented" }, { status: 501 });
+import { getIngestHub } from "@/server/ingest/hub";
+
+export const dynamic = "force-dynamic";
+
+export async function GET(request: Request) {
+  const id = new URL(request.url).searchParams.get("id");
+  if (!id) {
+    return Response.json({ error: "id required" }, { status: 400 });
+  }
+  const investigation = getIngestHub().getInvestigation(id);
+  if (!investigation) {
+    return Response.json({ error: "Not found" }, { status: 404 });
+  }
+  return Response.json(investigation);
 }

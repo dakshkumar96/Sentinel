@@ -1,5 +1,12 @@
 import { create } from "zustand";
-import type { Alert, AlertStatus, Client, DemoScenarioId, Placement } from "@/types";
+import type {
+  Alert,
+  AlertStatus,
+  Client,
+  DemoScenarioId,
+  Investigation,
+  Placement,
+} from "@/types";
 import type { PlacementLiveState, StreamMessage } from "@/types/stream";
 
 interface DashboardState {
@@ -8,8 +15,11 @@ interface DashboardState {
   placements: Placement[];
   states: Record<string, PlacementLiveState>;
   alerts: Alert[];
+  investigations: Record<string, Investigation>;
+  activeInvestigationId: string | null;
   scenarioLoading: DemoScenarioId | null;
   setConnected: (connected: boolean) => void;
+  selectInvestigation: (id: string | null) => void;
   applyMessage: (msg: StreamMessage) => void;
   resolveAlert: (id: string, status: AlertStatus) => Promise<void>;
   runScenario: (id: DemoScenarioId) => Promise<void>;
@@ -24,8 +34,11 @@ export const useDashboardStore = create<DashboardState>((set) => ({
   placements: [],
   states: {},
   alerts: [],
+  investigations: {},
+  activeInvestigationId: null,
   scenarioLoading: null,
   setConnected: (connected) => set({ connected }),
+  selectInvestigation: (id) => set({ activeInvestigationId: id }),
   resolveAlert: async (id, status) => {
     await fetch("/api/alerts/resolve", {
       method: "POST",
@@ -61,6 +74,8 @@ export const useDashboardStore = create<DashboardState>((set) => ({
             msg.states.map((s) => [s.placementId, s]),
           ),
           alerts: [],
+          investigations: {},
+          activeInvestigationId: null,
         });
         break;
       case "spend":
@@ -68,10 +83,22 @@ export const useDashboardStore = create<DashboardState>((set) => ({
           states: { ...s.states, [msg.state.placementId]: msg.state },
         }));
         break;
-      case "alert":
+      case "investigation":
         set((s) => ({
-          alerts: [msg.alert, ...s.alerts].slice(0, MAX_ALERTS),
+          investigations: {
+            ...s.investigations,
+            [msg.investigation.id]: msg.investigation,
+          },
+          activeInvestigationId: msg.investigation.id,
         }));
+        break;
+      case "alert":
+        set((s) => {
+          const alerts = [msg.alert, ...s.alerts].slice(0, MAX_ALERTS);
+          const activeInvestigationId =
+            msg.alert.investigationId ?? s.activeInvestigationId;
+          return { alerts, activeInvestigationId };
+        });
         break;
       case "alert_status":
         set((s) => ({
@@ -101,3 +128,22 @@ export const useDashboardStore = create<DashboardState>((set) => ({
 
 export const selectGuardrailAlerts = (s: DashboardState) =>
   s.alerts.filter((a) => a.source === "guardrail");
+
+export const selectOpenAlerts = (s: DashboardState) =>
+  s.alerts.filter(
+    (a) => a.status === "open" || a.status === "pending_human",
+  );
+
+export const selectEscalationStats = (s: DashboardState) => {
+  const signals = s.alerts.length;
+  const escalations = s.alerts.filter((a) => a.requiresHuman).length;
+  const pending = s.alerts.filter((a) => a.status === "pending_human").length;
+  return { signals, escalations, pending };
+};
+
+export function useActiveInvestigation(): Investigation | null {
+  return useDashboardStore((s) => {
+    const id = s.activeInvestigationId;
+    return id ? (s.investigations[id] ?? null) : null;
+  });
+}

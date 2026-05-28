@@ -1,4 +1,6 @@
 import { emptyHourlyBuckets, pushSpendToBuckets } from "@/lib/spend/metrics";
+import { AGENT_SCENARIOS } from "@/server/agent/investigations";
+import { runInvestigation } from "@/server/agent/orchestrator";
 import clientsFixture from "@/server/mock/fixtures/clients.json";
 import { buildScenarioEvents } from "@/server/mock/scenarios";
 import { createMockStream, getFixturePlacements } from "@/server/mock/stream";
@@ -8,6 +10,8 @@ import type {
   Alert,
   AlertStatus,
   Client,
+  DemoScenarioId,
+  Investigation,
   Placement,
   SpendEvent,
 } from "@/types";
@@ -15,15 +19,19 @@ import type { PlacementLiveState, StreamMessage } from "@/types/stream";
 
 type Subscriber = (msg: StreamMessage) => void;
 
+const AGENT_SCENARIO_SET = new Set<DemoScenarioId>(AGENT_SCENARIOS);
+
 class IngestHub {
   private subscribers = new Set<Subscriber>();
   private placements: Placement[] = getFixturePlacements();
   private readonly clients: Client[] = clientsFixture as Client[];
   private readonly states = new Map<string, PlacementLiveState>();
   private readonly alerts: Alert[] = [];
+  private readonly investigations = new Map<string, Investigation>();
   private readonly accumulator = new SpendAccumulator();
   private mockStream: ReturnType<typeof createMockStream> | null = null;
   private started = false;
+  private alertSeq = 0;
 
   constructor() {
     for (const p of this.placements) {
@@ -66,6 +74,11 @@ class IngestHub {
     };
   }
 
+  private nextAlertId(): string {
+    this.alertSeq += 1;
+    return `alt_${Date.now()}_${this.alertSeq}`;
+  }
+
   private ingest(event: SpendEvent) {
     const state = this.states.get(event.placementId);
     if (!state) return;
@@ -90,12 +103,20 @@ class IngestHub {
 
     if (!alert) return;
 
+    this.emitAlert(alert, pausePlacementIds, event.clientId);
+  }
+
+  private emitAlert(
+    alert: Alert,
+    pausePlacementIds: string[],
+    clientId: string,
+  ) {
     this.alerts.unshift(alert);
     const toPause = resolvePauseTargets(
       alert,
       pausePlacementIds,
       this.placements,
-      event.clientId,
+      clientId,
     );
     if (toPause.length > 0) this.pausePlacements(toPause, alert.title);
     this.broadcast({ type: "alert", alert });
@@ -120,20 +141,74 @@ class IngestHub {
     this.ingest(event);
   }
 
-  runScenario(id: Parameters<typeof buildScenarioEvents>[0]) {
-    for (const e of buildScenarioEvents(id, this.placements)) this.inject(e);
+  runScenario(id: DemoScenarioId) {
+    const target = pickScenarioPlacement(this.placements);
+    if (!target) return;
+
+    for (const e of buildScenarioEvents(id, this.placements)) {
+      this.ingest(e);
+    }
+
+    if (AGENT_SCENARIO_SET.has(id)) {
+      this.runAgentScenario(id, target);
+    }
+  }
+
+  private runAgentScenario(scenarioId: DemoScenarioId, placement: Placement) {
+    const alertId = this.nextAlertId();
+    const exposureGbp =
+      scenarioId === "zero_conv_burn"
+        ? 340
+        : scenarioId === "bad_spike" || scenarioId === "healthy_spike"
+          ? 88
+          : 120;
+
+    const investigation = runInvestigation({
+      scenarioId,
+      alertId,
+      placementId: placement.id,
+      clientId: placement.clientId,
+      exposureGbp,
+      brandSafetyAmbiguous: scenarioId === "brand_safety",
+    });
+
+    this.investigations.set(investigation.id, investigation);
+    this.broadcast({ type: "investigation", investigation });
+
+    const alert = buildAgentAlert(
+      alertId,
+      placement,
+      investigation,
+      scenarioId,
+    );
+    this.alerts.unshift(alert);
+    this.broadcast({ type: "alert", alert });
   }
 
   resolveAlert(id: string, status: AlertStatus) {
     const alert = this.alerts.find((a) => a.id === id);
     if (!alert) return;
+
     alert.status = status;
+
+    if (
+      status === "approved" &&
+      alert.recommendedAction === "pause" &&
+      alert.placementId
+    ) {
+      this.pausePlacements([alert.placementId], alert.title);
+    }
+
     this.broadcast({ type: "alert_status", id, status });
   }
 
   reset() {
-    this.placements = getFixturePlacements().map((p) => ({ ...p, status: "active" as const }));
+    this.placements = getFixturePlacements().map((p) => ({
+      ...p,
+      status: "active" as const,
+    }));
     this.alerts.length = 0;
+    this.investigations.clear();
     this.accumulator.reset();
     for (const p of this.placements) {
       this.states.set(p.id, {
@@ -146,9 +221,46 @@ class IngestHub {
     this.broadcast(this.snapshotInit());
   }
 
-  getPlacements(): Placement[] {
-    return [...this.placements];
+  getInvestigation(id: string): Investigation | undefined {
+    return this.investigations.get(id);
   }
+}
+
+function pickScenarioPlacement(placements: Placement[]): Placement | null {
+  const active = placements.filter((p) => p.status === "active");
+  return active.find((p) => p.clientId === "acme_retail") ?? active[0] ?? null;
+}
+
+function buildAgentAlert(
+  id: string,
+  placement: Placement,
+  investigation: Investigation,
+  scenarioId: DemoScenarioId,
+): Alert {
+  const titles: Record<string, string> = {
+    healthy_spike: "Spend spike — healthy scaling",
+    bad_spike: "Spend spike — conversion flat",
+    brand_safety: "Brand-safety review",
+    zero_conv_burn: "Zero-conversion burn",
+  };
+
+  const requiresHuman = investigation.requiresHuman;
+  const status = requiresHuman ? "pending_human" : "resolved";
+
+  return {
+    id,
+    ts: new Date().toISOString(),
+    clientId: placement.clientId,
+    placementId: placement.id,
+    source: "agent",
+    severity: requiresHuman ? "warning" : "info",
+    title: titles[scenarioId] ?? "Agent signal",
+    summary: investigation.reasoning,
+    status,
+    investigationId: investigation.id,
+    recommendedAction: investigation.recommendedAction,
+    requiresHuman,
+  };
 }
 
 function resolvePauseTargets(

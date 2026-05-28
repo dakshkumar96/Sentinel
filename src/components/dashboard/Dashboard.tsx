@@ -3,7 +3,11 @@
 import { useMemo } from "react";
 import { useSpendStream } from "@/hooks/use-spend-stream";
 import { formatGbp } from "@/lib/format";
-import { useDashboardStore } from "@/lib/store/dashboard-store";
+import {
+  useActiveInvestigation,
+  useDashboardStore,
+} from "@/lib/store/dashboard-store";
+import { ReasoningTrace } from "@/components/agent/ReasoningTrace";
 import { AlertsPanel } from "./AlertsPanel";
 import { DemoControls } from "./DemoControls";
 import { GuardrailAlerts } from "./GuardrailAlerts";
@@ -11,6 +15,7 @@ import { PlacementCard } from "./PlacementCard";
 
 export function Dashboard() {
   useSpendStream();
+  const activeInvestigation = useActiveInvestigation();
 
   const connected = useDashboardStore((s) => s.connected);
   const clients = useDashboardStore((s) => s.clients);
@@ -61,6 +66,7 @@ export function Dashboard() {
         <div className="grid gap-6 lg:grid-cols-[1fr_280px]">
           <div className="space-y-6 min-w-0">
             <GuardrailAlerts />
+            <ReasoningTrace investigation={activeInvestigation} />
 
             {clients.map((client) => {
           const cards = byClient.get(client.id) ?? [];

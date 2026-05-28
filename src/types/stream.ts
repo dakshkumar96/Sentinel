@@ -1,4 +1,11 @@
-import type { Alert, AlertStatus, Client, Placement, SpendEvent } from "./index";
+import type {
+  Alert,
+  AlertStatus,
+  Client,
+  Investigation,
+  Placement,
+  SpendEvent,
+} from "./index";
 
 export interface PlacementLiveState {
   placementId: string;
@@ -17,6 +24,7 @@ export type StreamMessage =
   | { type: "spend"; event: SpendEvent; state: PlacementLiveState }
   | { type: "alert"; alert: Alert }
   | { type: "alert_status"; id: string; status: AlertStatus }
+  | { type: "investigation"; investigation: Investigation }
   | {
       type: "placements_paused";
       placementIds: string[];

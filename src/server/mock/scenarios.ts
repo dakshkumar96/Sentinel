@@ -43,7 +43,7 @@ export function buildScenarioEvents(
           clientId: target.clientId,
           type: "conversation_context",
           conversationSnippet:
-            "Thread about election rigging and partisan political party attacks.",
+            "User thread about mass layoffs and job loss fears at a major employer.",
         },
       ];
     case "healthy_spike":
