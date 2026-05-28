@@ -7,30 +7,30 @@ const CHANNEL_LABEL: Record<Channel, string> = {
   other: "Other",
 };
 
-/** Muted channel chips on dark surfaces */
+/** Channel chips on warm light surfaces */
 export const CHANNEL_STYLE: Record<
   Channel,
   { dot: string; chip: string; line: string }
 > = {
   chatgpt: {
-    dot: "bg-[#4ade80]",
-    chip: "bg-[#1c1c1c] text-[#a3a3a3] border-[#2a2a2a]",
-    line: "from-[#4ade80]/50 to-transparent",
+    dot: "bg-[var(--green)]",
+    chip: "bg-[var(--bg-elevated)] text-[var(--text-secondary)] border-[var(--border-subtle)]",
+    line: "from-[var(--green)]/45 to-transparent",
   },
   claude_apps: {
-    dot: "bg-[#fbbf24]",
-    chip: "bg-[#1c1c1c] text-[#a3a3a3] border-[#2a2a2a]",
-    line: "from-[#fbbf24]/50 to-transparent",
+    dot: "bg-[var(--accent)]",
+    chip: "bg-[var(--bg-elevated)] text-[var(--text-secondary)] border-[var(--border-subtle)]",
+    line: "from-[var(--accent)]/45 to-transparent",
   },
   thrad_publisher: {
-    dot: "bg-[#60a5fa]",
-    chip: "bg-[#1c1c1c] text-[#a3a3a3] border-[#2a2a2a]",
-    line: "from-[#60a5fa]/50 to-transparent",
+    dot: "bg-[var(--blue)]",
+    chip: "bg-[var(--bg-elevated)] text-[var(--text-secondary)] border-[var(--border-subtle)]",
+    line: "from-[var(--blue)]/45 to-transparent",
   },
   other: {
-    dot: "bg-[#737373]",
-    chip: "bg-[#1c1c1c] text-[#737373] border-[#2a2a2a]",
-    line: "from-white/15 to-transparent",
+    dot: "bg-[var(--text-muted)]",
+    chip: "bg-[var(--bg-elevated)] text-[var(--text-muted)] border-[var(--border-subtle)]",
+    line: "from-stone-400/30 to-transparent",
   },
 };
 
@@ -54,7 +54,7 @@ export function statusLabel(status: Placement["status"]): string {
 }
 
 export const CLIENT_ACCENT = [
-  "border-l-[var(--purple-strong)]",
+  "border-l-[var(--accent-strong)]",
   "border-l-[var(--green)]",
   "border-l-[var(--blue)]",
 ] as const;

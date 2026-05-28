@@ -46,12 +46,12 @@ export function ApprovalGate() {
     <div className="fixed inset-0 z-50 flex justify-end">
       <button
         type="button"
-        className="absolute inset-0 bg-[#0a0a0a]/85 backdrop-blur-md"
+        className="absolute inset-0 bg-[var(--overlay)] backdrop-blur-sm"
         aria-label="Close approval gate"
         onClick={closeGate}
       />
       <aside
-        className="relative flex h-full w-full max-w-md flex-col border-l border-[var(--border-strong)] bg-[var(--bg-elevated)] shadow-[-24px_0_80px_rgba(0,0,0,0.5)]"
+        className="relative flex h-full w-full max-w-md flex-col border-l border-[var(--border-strong)] bg-[var(--bg-elevated)] shadow-[-12px_0_40px_rgba(28,25,23,0.12)]"
         role="dialog"
         aria-labelledby="approval-gate-title"
       >

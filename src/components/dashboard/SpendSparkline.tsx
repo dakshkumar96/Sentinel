@@ -38,12 +38,12 @@ export function SpendSparkline({
     >
       <defs>
         <linearGradient id={calmId} x1="0" y1="1" x2="0" y2="0">
-          <stop offset="0%" stopColor="#7c3aed" />
-          <stop offset="100%" stopColor="#a78bfa" />
+          <stop offset="0%" stopColor="#ae5630" />
+          <stop offset="100%" stopColor="#d97757" />
         </linearGradient>
         <linearGradient id={spikeId} x1="0" y1="1" x2="0" y2="0">
-          <stop offset="0%" stopColor="#f59e0b" />
-          <stop offset="100%" stopColor="#fbbf24" />
+          <stop offset="0%" stopColor="#b8860b" />
+          <stop offset="100%" stopColor="#d4a017" />
         </linearGradient>
       </defs>
       {buckets.map((v, i) => {

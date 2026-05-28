@@ -108,7 +108,7 @@ export function Dashboard() {
                     </div>
                   </div>
 
-                  <div className="grid gap-3 px-5 pb-5 sm:grid-cols-2 xl:grid-cols-3">
+                  <div className="grid gap-4 px-5 pb-5 grid-cols-1 md:grid-cols-2">
                     {cards.map((placement) => (
                       <PlacementCard
                         key={placement.id}
