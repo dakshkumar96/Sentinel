@@ -12,6 +12,7 @@ import { ReasoningTrace } from "@/components/agent/ReasoningTrace";
 import { AuditExport } from "./AuditExport";
 import { AlertsPanel } from "./AlertsPanel";
 import { DashboardHeader } from "./DashboardHeader";
+import { DaySummary } from "./DaySummary";
 import { DemoControls } from "./DemoControls";
 import { GuardrailAlerts } from "./GuardrailAlerts";
 import { PlacementCard } from "./PlacementCard";
@@ -51,6 +52,7 @@ export function Dashboard() {
       <main className="relative z-10 mx-auto max-w-7xl px-6 py-8">
         <div className="grid gap-8 lg:grid-cols-[1fr_300px]">
           <div className="min-w-0 space-y-8">
+            <DaySummary />
             <GuardrailAlerts />
             <ReasoningTrace investigation={activeInvestigation} />
 

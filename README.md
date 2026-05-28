@@ -8,6 +8,7 @@ Agentic spend guardian for AI-channel advertising — built for agencies.
 
 | Feature | What you see |
 |--------|----------------|
+| **Day summary** | Top panel — portfolio spend vs budget, KPIs, and per-advertiser rows (spend, health, alerts) for today. |
 | **Live spend watch** | Per-client and per-placement spend updating in real time (mock SSE); calm green state by default. |
 | **Campaign & placement grid** | Cards for each client/placement with channel, status, and spend velocity. |
 | **Spend sparklines** | Spend trend per placement; turns amber/red on spikes. |
