@@ -1,10 +1,28 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useMemo } from "react";
 import { computeDaySummary, type AdvertiserHealth } from "@/lib/spend/day-summary";
 import { CLIENT_ACCENT, formatGbp } from "@/lib/format";
 import { useDashboardStore } from "@/lib/store/dashboard-store";
-import { DaySummaryCharts } from "./DaySummaryCharts";
+
+const DaySummaryCharts = dynamic(
+  () =>
+    import("./DaySummaryCharts").then((m) => ({ default: m.DaySummaryCharts })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="grid gap-4 border-t border-[var(--border-subtle)] p-4 sm:grid-cols-2 sm:p-5">
+        {[0, 1].map((i) => (
+          <div
+            key={i}
+            className="h-[248px] animate-pulse rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-inset)]"
+          />
+        ))}
+      </div>
+    ),
+  },
+);
 
 const HEALTH_LABEL: Record<AdvertiserHealth, string> = {
   calm: "On track",

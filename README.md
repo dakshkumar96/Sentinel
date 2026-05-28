@@ -48,17 +48,18 @@ Add `ANTHROPIC_API_KEY` to `.env.local`. Without it, scenario-keyed mock agent r
 
 ### Troubleshooting
 
-**`__webpack_modules__[moduleId] is not a function`** — stale dev cache or two servers running:
+**500 / blank page / `incorrect header check` / `Cannot find module './873.js'`** — corrupted `.next` cache (common after `git pull` or adding deps like Recharts). **Stop every** `npm run dev` (Ctrl+C), then:
 
-```powershell
-# Stop ALL dev servers (Ctrl+C in every terminal), then:
-Remove-Item -Recurse -Force .next
+```bash
+npm run clean
 npm run dev
 ```
 
-Use only **one** tab at the URL the terminal prints (e.g. `http://localhost:3000`). Hard-refresh (Ctrl+Shift+R).
+Or one step: `npm run dev:clean`
 
-If the page is blank after a git pull, run the same `.next` cleanup above.
+Use only **one** dev server and the URL it prints (e.g. `http://localhost:3000`). Hard-refresh (Cmd+Shift+R / Ctrl+Shift+R).
+
+**`__webpack_modules__[moduleId] is not a function`** — same fix as above.
 
 ---
 
