@@ -129,3 +129,32 @@ PLAN.md           Architecture + phases
 
 - [PLAN.md](./PLAN.md) — architecture, build phases
 - [docs/PRD.md](./docs/PRD.md) — product requirements
+
+
+
+# Demo transcript
+Sentinel — 2-Minute Demo Script (3 speakers)
+
+🎤 Speaker 1 — Intro (≈ 0:00–0:40)
+"Hey, we're [team name], and we built Sentinel.
+So — agencies are starting to spend real money on ads inside AI apps. ChatGPT placements, sponsored answers, that kind of thing. And the problem is, when something goes wrong on these new channels, it goes wrong fast. A campaign can burn through a client's budget overnight. An ad can pop up next to completely the wrong conversation. And nobody's really watching, because the tools just don't exist yet.
+That's what Sentinel does. It's an agent that watches your AI ad spend in the background, catches the problems early, and — this is the important bit — knows when to handle something itself versus when to grab a human. We built it for mid-size agencies, the ones juggling 20 clients at once.
+Let me hand over to [Speaker 2] to show you what it actually looks like."
+
+🎤 Speaker 2 — Demo Part 1: The dashboard & a live catch (≈ 0:40–1:20)
+Dashboard on screen — calm, all green.
+"Okay so this is the main view. All your clients, all their AI placements, in one place. Normally it's quiet — that's the point. Sentinel only surfaces things you actually need to look at.
+A card pulses amber.
+"And — here we go. A ChatGPT placement for this client just spiked 4× in spend in the last hour. Now, a normal tool would either spam you with alerts or completely miss it. Watch what Sentinel does instead.
+Reasoning trace opens, tools light up.
+"It's actually investigating. It's checking the conversions — they're flat. Pulling the conversation the ad was served next to — nothing obvious. Comparing against this client's normal pattern — way outside. Checking if there's a launch today — nope.
+Verdict card appears.
+"And it lands on: this is burning budget, 91% sure. But because real money's about to move, it doesn't just act — it asks. [Speaker 3]'s going to take you through that part."
+
+🎤 Speaker 3 — Demo Part 2: The human-in-the-loop & the big idea (≈ 1:20–2:00)
+Approve / Override card visible.
+"So this is where Sentinel is genuinely different. It's not a rules engine — it's an agent making a judgment call. It looked at all that evidence and asked itself: am I confident enough to act alone, or does a human need to weigh in?
+For the obvious stuff — like a hard budget ceiling — it just acts. Those stay as dumb, reliable rules, exactly as they should. But for the judgment calls? Like is this spike actually bad, or is the campaign just working? Or is this ad sitting next to a weird conversation? — those go to a human, with all the reasoning right there so you can decide in five seconds.
+That's the whole idea. Hard limits stay automatic. Judgment stays human. The agent decides which is which.
+AI ad channels are basically brand new. Nobody's built the trust layer for them yet — and that's what we're building.
+That's Sentinel. Cheers!"
