@@ -8,7 +8,7 @@ interface ScenarioInvestigationInput {
   clientId: string;
 }
 
-const TOOL_SETS: Record<DemoScenarioId, ToolName[]> = {
+export const TOOL_SETS: Record<DemoScenarioId, ToolName[]> = {
   healthy_spike: [
     "get_conversion_trend",
     "get_client_context",
@@ -107,6 +107,23 @@ export function buildScenarioInvestigation(
     confidence: meta?.confidence ?? 1,
     requiresHuman: meta?.requiresHuman ?? false,
     recommendedAction: meta?.recommendedAction,
+  };
+}
+
+/** Demo escalation policy — wins over Claude for known judge scenarios. */
+export function applyScenarioPolicy(
+  investigation: Investigation,
+  scenarioId: DemoScenarioId,
+): Investigation {
+  if (scenarioId === "guardrail_cap") return investigation;
+  const meta = SCENARIO_META[scenarioId as Exclude<DemoScenarioId, "guardrail_cap">];
+  if (!meta) return investigation;
+  return {
+    ...investigation,
+    verdict: meta.verdict,
+    requiresHuman: meta.requiresHuman,
+    recommendedAction: meta.recommendedAction,
+    reasoning: investigation.reasoning || meta.reasoning,
   };
 }
 

@@ -7,7 +7,9 @@ import {
   useActiveInvestigation,
   useDashboardStore,
 } from "@/lib/store/dashboard-store";
+import { ApprovalGate } from "@/components/alerts/ApprovalGate";
 import { ReasoningTrace } from "@/components/agent/ReasoningTrace";
+import { AuditExport } from "./AuditExport";
 import { AlertsPanel } from "./AlertsPanel";
 import { DemoControls } from "./DemoControls";
 import { GuardrailAlerts } from "./GuardrailAlerts";
@@ -43,6 +45,7 @@ export function Dashboard() {
 
   return (
     <div className="min-h-screen bg-zinc-950">
+      <ApprovalGate />
       <header className="border-b border-zinc-800 px-6 py-4">
         <div className="mx-auto flex max-w-6xl items-center justify-between">
           <div>
@@ -131,6 +134,7 @@ export function Dashboard() {
 
           <aside className="space-y-4 lg:sticky lg:top-6 lg:self-start">
             <DemoControls />
+            <AuditExport />
             <AlertsPanel />
           </aside>
         </div>

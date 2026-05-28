@@ -1,4 +1,6 @@
 import { emptyHourlyBuckets, pushSpendToBuckets } from "@/lib/spend/metrics";
+import { createAuditEntry, type AuditEntry } from "@/server/audit/log";
+import { hasClaudeApiKey } from "@/server/agent/claude";
 import { AGENT_SCENARIOS } from "@/server/agent/investigations";
 import { runInvestigation } from "@/server/agent/orchestrator";
 import clientsFixture from "@/server/mock/fixtures/clients.json";
@@ -28,6 +30,7 @@ class IngestHub {
   private readonly states = new Map<string, PlacementLiveState>();
   private readonly alerts: Alert[] = [];
   private readonly investigations = new Map<string, Investigation>();
+  private readonly auditLog: AuditEntry[] = [];
   private readonly accumulator = new SpendAccumulator();
   private mockStream: ReturnType<typeof createMockStream> | null = null;
   private started = false;
@@ -112,6 +115,11 @@ class IngestHub {
     clientId: string,
   ) {
     this.alerts.unshift(alert);
+    this.pushAudit(
+      "alert_created",
+      `${alert.source}: ${alert.title}`,
+      { alertId: alert.id, source: alert.source, severity: alert.severity },
+    );
     const toPause = resolvePauseTargets(
       alert,
       pausePlacementIds,
@@ -122,6 +130,15 @@ class IngestHub {
     this.broadcast({ type: "alert", alert });
   }
 
+  private pushAudit(
+    kind: Parameters<typeof createAuditEntry>[0],
+    summary: string,
+    payload: Record<string, unknown>,
+  ) {
+    this.auditLog.unshift(createAuditEntry(kind, summary, payload));
+    if (this.auditLog.length > 200) this.auditLog.length = 200;
+  }
+
   private pausePlacements(ids: string[], reason: string) {
     const idSet = new Set(ids);
     for (const p of this.placements) {
@@ -130,6 +147,7 @@ class IngestHub {
       const st = this.states.get(p.id);
       if (st) st.status = "paused";
     }
+    this.pushAudit("placement_paused", reason, { placementIds: ids });
     this.broadcast({
       type: "placements_paused",
       placementIds: ids,
@@ -150,11 +168,14 @@ class IngestHub {
     }
 
     if (AGENT_SCENARIO_SET.has(id)) {
-      this.runAgentScenario(id, target);
+      void this.runAgentScenario(id, target);
     }
   }
 
-  private runAgentScenario(scenarioId: DemoScenarioId, placement: Placement) {
+  private async runAgentScenario(
+    scenarioId: DemoScenarioId,
+    placement: Placement,
+  ) {
     const alertId = this.nextAlertId();
     const exposureGbp =
       scenarioId === "zero_conv_burn"
@@ -163,7 +184,7 @@ class IngestHub {
           ? 88
           : 120;
 
-    const investigation = runInvestigation({
+    const investigation = await runInvestigation({
       scenarioId,
       alertId,
       placementId: placement.id,
@@ -173,6 +194,13 @@ class IngestHub {
     });
 
     this.investigations.set(investigation.id, investigation);
+    this.pushAudit("investigation_complete", investigation.reasoning, {
+      investigationId: investigation.id,
+      verdict: investigation.verdict,
+      confidence: investigation.confidence,
+      engine: investigation.signal.includes("claude") ? "claude" : "mock",
+      claudeAvailable: hasClaudeApiKey(),
+    });
     this.broadcast({ type: "investigation", investigation });
 
     const alert = buildAgentAlert(
@@ -182,6 +210,11 @@ class IngestHub {
       scenarioId,
     );
     this.alerts.unshift(alert);
+    this.pushAudit("alert_created", alert.title, {
+      alertId: alert.id,
+      investigationId: investigation.id,
+      requiresHuman: alert.requiresHuman,
+    });
     this.broadcast({ type: "alert", alert });
   }
 
@@ -190,6 +223,11 @@ class IngestHub {
     if (!alert) return;
 
     alert.status = status;
+    this.pushAudit("alert_resolved", `${alert.title} → ${status}`, {
+      alertId: id,
+      status,
+      source: alert.source,
+    });
 
     if (
       status === "approved" &&
@@ -209,6 +247,8 @@ class IngestHub {
     }));
     this.alerts.length = 0;
     this.investigations.clear();
+    this.auditLog.length = 0;
+    this.pushAudit("demo_reset", "Dashboard reset to calm state", {});
     this.accumulator.reset();
     for (const p of this.placements) {
       this.states.set(p.id, {
@@ -223,6 +263,16 @@ class IngestHub {
 
   getInvestigation(id: string): Investigation | undefined {
     return this.investigations.get(id);
+  }
+
+  getAuditSnapshot() {
+    return {
+      exportedAt: new Date().toISOString(),
+      agentEngine: hasClaudeApiKey() ? "claude" : "mock",
+      entries: [...this.auditLog],
+      alerts: [...this.alerts],
+      investigations: [...this.investigations.values()],
+    };
   }
 }
 

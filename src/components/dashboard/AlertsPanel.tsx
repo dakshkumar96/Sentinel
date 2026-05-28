@@ -1,6 +1,6 @@
 "use client";
 
-import type { Alert, AlertStatus } from "@/types";
+import type { Alert } from "@/types";
 import {
   selectEscalationStats,
   selectOpenAlerts,
@@ -27,11 +27,12 @@ function AlertRow({
   selected: boolean;
   onSelect: () => void;
 }) {
-  const resolveAlert = useDashboardStore((s) => s.resolveAlert);
+  const openGate = useDashboardStore((s) => s.openGate);
   const pending =
     alert.status === "pending_human" ||
     (alert.status === "open" && alert.requiresHuman);
-  const showHitl = pending && alert.requiresHuman && alert.source === "agent";
+  const needsReview =
+    pending && alert.requiresHuman && alert.source === "agent";
   const resolved = ["approved", "resolved", "overridden", "dismissed"].includes(
     alert.status,
   );
@@ -80,54 +81,16 @@ function AlertRow({
         )}
       </button>
 
-      {showHitl && (
-        <div className="mt-2 flex flex-wrap gap-2 pl-1">
-          <HitlButton
-            label="Approve"
-            title="Approve recommended action"
-            variant="primary"
-            onClick={() => resolveAlert(alert.id, "approved")}
-          />
-          <HitlButton
-            label="Override"
-            title="Keep placement running"
-            variant="secondary"
-            onClick={() => resolveAlert(alert.id, "overridden")}
-          />
-          <HitlButton
-            label="Dismiss"
-            title="Dismiss without action"
-            variant="ghost"
-            onClick={() => resolveAlert(alert.id, "dismissed")}
-          />
-        </div>
+      {needsReview && (
+        <button
+          type="button"
+          onClick={() => openGate(alert.id)}
+          className="mt-2 w-full rounded-md border border-amber-500/40 bg-amber-500/10 py-1.5 text-xs font-medium text-amber-300 hover:bg-amber-500/20"
+        >
+          Review in approval gate →
+        </button>
       )}
     </li>
-  );
-}
-
-function HitlButton({
-  label,
-  title,
-  variant,
-  onClick,
-}: {
-  label: string;
-  title: string;
-  variant: "primary" | "secondary" | "ghost";
-  onClick: () => void;
-}) {
-  const className =
-    variant === "primary"
-      ? "rounded-md bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-500"
-      : variant === "secondary"
-        ? "rounded-md border border-zinc-600 px-3 py-1.5 text-xs font-medium text-zinc-300 hover:bg-zinc-800"
-        : "rounded-md px-3 py-1.5 text-xs text-zinc-500 hover:text-zinc-300";
-
-  return (
-    <button type="button" title={title} onClick={onClick} className={className}>
-      {label}
-    </button>
   );
 }
 
@@ -136,7 +99,9 @@ export function AlertsPanel() {
   const openAlerts = useDashboardStore(selectOpenAlerts);
   const stats = useDashboardStore(selectEscalationStats);
   const activeInvestigationId = useDashboardStore((s) => s.activeInvestigationId);
+  const gateAlertId = useDashboardStore((s) => s.gateAlertId);
   const selectInvestigation = useDashboardStore((s) => s.selectInvestigation);
+  const openGate = useDashboardStore((s) => s.openGate);
 
   const resolved = alerts.filter(
     (a) => !openAlerts.some((o) => o.id === a.id),
@@ -145,6 +110,13 @@ export function AlertsPanel() {
   const handleSelect = (alert: Alert) => {
     if (alert.investigationId) {
       selectInvestigation(alert.investigationId);
+    }
+    if (
+      alert.status === "pending_human" &&
+      alert.requiresHuman &&
+      alert.source === "agent"
+    ) {
+      openGate(alert.id);
     }
   };
 
@@ -174,7 +146,10 @@ export function AlertsPanel() {
                 <AlertRow
                   key={a.id}
                   alert={a}
-                  selected={a.investigationId === activeInvestigationId}
+                  selected={
+                    a.investigationId === activeInvestigationId ||
+                    a.id === gateAlertId
+                  }
                   onSelect={() => handleSelect(a)}
                 />
               ))

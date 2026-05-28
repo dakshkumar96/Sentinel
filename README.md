@@ -2,7 +2,7 @@
 
 Agentic spend guardian for AI-channel advertising — built for agencies.
 
-**Status:** Phase 1–4 demo complete — live dashboard, charter guardrails, mock agent, HITL sidebar.
+**Status:** Hackathon demo complete — live dashboard, guardrails, agent (Claude or mock), HITL slide-over, audit export.
 
 ## Dashboard features
 
@@ -18,16 +18,17 @@ Agency command center for AI-channel spend (ChatGPT-style placements, Thrad publ
 | ✅ | **Demo scenario controls** | One-click triggers: `healthy_spike`, `bad_spike`, `brand_safety`, `zero_conv_burn`, `guardrail_cap` + reset. |
 | ✅ | **Guardrail alerts** | Instant alerts from `charter.yaml` on live ticks (budget cap, blocklist) + `guardrail_cap` scenario; auto-pause, no LLM. |
 | ✅ | **Spend anomaly cards** | `healthy_spike` / `bad_spike` fire spend + agent investigation; cards pulse amber/red on out-of-band spend. |
-| ✅ | **Brand-safety review** | `brand_safety` scenario — mock agent checks conversation + brand guidelines; escalate with evidence (no live Claude yet). |
+| ✅ | **Brand-safety review** | `brand_safety` scenario — agent checks conversation + brand guidelines; uses Claude when `ANTHROPIC_API_KEY` is set, else mock. |
 | ✅ | **Zero-conversion burn** | `zero_conv_burn` scenario — spend burst, agent recommends pause with HITL gate. |
 | ✅ | **Escalation tuning** | Healthy spike skips human gate; bad spike asks for approval — hard-coded per scenario + charter tighten rules. |
-| ✅ | **Human-in-the-loop gates** | Approve / Override / Dismiss on agent alerts in the sidebar (slide-over sheet 🔜). |
-| ✅ | **Alert sidebar** | Open vs resolved, guardrail vs agent badges, escalation counts, click-to-view trace. Audit log export 🔜. |
-| ✅ | **Agent reasoning trace** | Tools stage sequentially, evidence, verdict, confidence, escalation outcome on main panel. |
+| ✅ | **Human-in-the-loop gates** | Slide-over **approval gate** — Approve / Override / Dismiss with evidence; auto-opens on `pending_human` agent alerts. |
+| ✅ | **Alert sidebar** | Open vs resolved, guardrail vs agent badges, escalation counts, review → approval gate. |
+| ✅ | **Agent reasoning trace** | Tools stage sequentially, evidence, verdict, confidence; Claude or mock per `ANTHROPIC_API_KEY`. |
+| ✅ | **Audit log export** | Download JSON (`/api/audit/export`) — alerts, investigations, actions, pauses. |
 
 **Not on the dashboard (by design):** bidding/optimization, full cross-channel reporting, or replacing platform-native hard budget controls.
 
-See [PLAN.md](./PLAN.md) for remaining polish (Claude API agent, audit export, slide-over approval sheet).
+See [PLAN.md](./PLAN.md) for post-hackathon items (real ad APIs, learning from feedback).
 
 ## Quick start
 
@@ -67,7 +68,7 @@ cd sentinel
 npx vercel --prod
 ```
 
-No env vars required for the demo (mock stream + scenario-keyed agent). Add `ANTHROPIC_API_KEY` in Vercel when wiring live Claude investigations.
+Optional: set `ANTHROPIC_API_KEY` (and `ANTHROPIC_MODEL` if needed) in Vercel for live Claude investigations; without it, the mock agent runs the same demo flows.
 
 `create-next-app` is not a global command — use `npx` if scaffolding a fresh folder:
 

@@ -17,9 +17,12 @@ interface DashboardState {
   alerts: Alert[];
   investigations: Record<string, Investigation>;
   activeInvestigationId: string | null;
+  gateAlertId: string | null;
   scenarioLoading: DemoScenarioId | null;
   setConnected: (connected: boolean) => void;
   selectInvestigation: (id: string | null) => void;
+  openGate: (alertId: string) => void;
+  closeGate: () => void;
   applyMessage: (msg: StreamMessage) => void;
   resolveAlert: (id: string, status: AlertStatus) => Promise<void>;
   runScenario: (id: DemoScenarioId) => Promise<void>;
@@ -36,9 +39,18 @@ export const useDashboardStore = create<DashboardState>((set) => ({
   alerts: [],
   investigations: {},
   activeInvestigationId: null,
+  gateAlertId: null,
   scenarioLoading: null,
   setConnected: (connected) => set({ connected }),
   selectInvestigation: (id) => set({ activeInvestigationId: id }),
+  openGate: (alertId) => {
+    const alert = useDashboardStore.getState().alerts.find((a) => a.id === alertId);
+    set({
+      gateAlertId: alertId,
+      activeInvestigationId: alert?.investigationId ?? null,
+    });
+  },
+  closeGate: () => set({ gateAlertId: null }),
   resolveAlert: async (id, status) => {
     await fetch("/api/alerts/resolve", {
       method: "POST",
@@ -47,6 +59,7 @@ export const useDashboardStore = create<DashboardState>((set) => ({
     });
     set((s) => ({
       alerts: s.alerts.map((a) => (a.id === id ? { ...a, status } : a)),
+      gateAlertId: s.gateAlertId === id ? null : s.gateAlertId,
     }));
   },
   runScenario: async (id) => {
@@ -76,6 +89,7 @@ export const useDashboardStore = create<DashboardState>((set) => ({
           alerts: [],
           investigations: {},
           activeInvestigationId: null,
+          gateAlertId: null,
         });
         break;
       case "spend":
@@ -97,7 +111,11 @@ export const useDashboardStore = create<DashboardState>((set) => ({
           const alerts = [msg.alert, ...s.alerts].slice(0, MAX_ALERTS);
           const activeInvestigationId =
             msg.alert.investigationId ?? s.activeInvestigationId;
-          return { alerts, activeInvestigationId };
+          const gateAlertId =
+            msg.alert.status === "pending_human" && msg.alert.requiresHuman
+              ? msg.alert.id
+              : s.gateAlertId;
+          return { alerts, activeInvestigationId, gateAlertId };
         });
         break;
       case "alert_status":
