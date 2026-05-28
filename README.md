@@ -158,3 +158,5 @@ For the obvious stuff — like a hard budget ceiling — it just acts. Those sta
 That's the whole idea. Hard limits stay automatic. Judgment stays human. The agent decides which is which.
 AI ad channels are basically brand new. Nobody's built the trust layer for them yet — and that's what we're building.
 That's Sentinel. Cheers!"
+
+https://luma.com/user/usr-4XkjnxBOfufc9s0
