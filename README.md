@@ -4,6 +4,29 @@ Agentic spend guardian for AI-channel advertising — built for agencies.
 
 **Status:** Hackathon scaffold — see [PLAN.md](./PLAN.md) for build phases.
 
+## Dashboard features
+
+The main UI is a single agency command center for AI-channel spend (ChatGPT-style placements, Thrad publishers, and similar). Planned v1 surface:
+
+| Feature | What you see |
+|--------|----------------|
+| **Live spend watch** | Per-client and per-placement spend updating in real time (mock SSE feed); calm green state by default, anomalies surface automatically. |
+| **Campaign & placement grid** | Cards for each client/placement with channel, status, and spend velocity. |
+| **Spend sparklines** | Hourly spend trends per placement — spikes turn red when out of band. |
+| **Guardrail alerts** | Instant, non-agent flags when hard limits hit (budget cap, blocklisted context) — auto-pause with no LLM “thinking” step. |
+| **Agent reasoning trace** | Step-by-step investigation: which tools ran, what they returned, conclusion, and confidence (demo hero panel). |
+| **Human-in-the-loop gates** | Slide-over **Approve / Override / Pause** when judgment is ambiguous or stakes are high; evidence bundled on the card. |
+| **Brand-safety review** | Flag when creative may mismatch conversation context (e.g. ad near layoffs chat) with transcript excerpt for review. |
+| **Spend anomaly cards** | e.g. “4× spend in 1 hour” — agent resolves as healthy scaling vs burn vs escalate. |
+| **Zero-conversion burn** | Placement spent with no conversions over a window — recommend pause with spend total. |
+| **Escalation tuning** | Only high-signal issues interrupt the human; healthy spikes logged without a gate (anti–alert-fatigue story). |
+| **Alert & audit sidebar** | Open vs resolved alerts, guardrail vs agent source, and a log of what the system did and why. |
+| **Demo scenario controls** | One-click triggers for judge demos: `healthy_spike`, `bad_spike`, `brand_safety`, `zero_conv_burn`, `guardrail_cap`. |
+
+**Not on the dashboard (by design):** bidding/optimization, full cross-channel reporting, or replacing platform-native hard budget controls.
+
+Implementation status: shell + API stubs only — see [PLAN.md](./PLAN.md) build phases.
+
 ## Quick start
 
 ```bash
