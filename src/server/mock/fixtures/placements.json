@@ -7,10 +7,38 @@
     "status": "active"
   },
   {
+    "id": "plc_thrad_acme_01",
+    "clientId": "acme_retail",
+    "channel": "thrad_publisher",
+    "name": "Acme — Thrad Lifestyle",
+    "status": "active"
+  },
+  {
+    "id": "plc_chatgpt_north_01",
+    "clientId": "northwind_travel",
+    "channel": "chatgpt",
+    "name": "Northwind — ChatGPT Travel",
+    "status": "active"
+  },
+  {
     "id": "plc_thrad_north_01",
     "clientId": "northwind_travel",
     "channel": "thrad_publisher",
     "name": "Northwind — Thrad Travel Intent",
+    "status": "active"
+  },
+  {
+    "id": "plc_chatgpt_contoso_01",
+    "clientId": "contoso_fintech",
+    "channel": "chatgpt",
+    "name": "Contoso — ChatGPT B2B",
+    "status": "learning"
+  },
+  {
+    "id": "plc_claude_contoso_01",
+    "clientId": "contoso_fintech",
+    "channel": "claude_apps",
+    "name": "Contoso — Claude Apps",
     "status": "active"
   }
 ]

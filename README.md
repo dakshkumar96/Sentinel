@@ -2,7 +2,7 @@
 
 Agentic spend guardian for AI-channel advertising — built for agencies.
 
-**Status:** Hackathon scaffold — see [PLAN.md](./PLAN.md) for build phases.
+**Status:** Phase 1 live — dashboard + mock stream + demo scenarios.
 
 ## Dashboard features
 
@@ -25,7 +25,7 @@ The main UI is a single agency command center for AI-channel spend (ChatGPT-styl
 
 **Not on the dashboard (by design):** bidding/optimization, full cross-channel reporting, or replacing platform-native hard budget controls.
 
-Implementation status: shell + API stubs only — see [PLAN.md](./PLAN.md) build phases.
+Implementation status: Phase 1 complete (dashboard, SSE, scenarios). Phase 2+ (guardrails, Claude agent) — see [PLAN.md](./PLAN.md).
 
 ## Quick start
 
@@ -35,6 +35,16 @@ npm install
 cp .env.example .env.local   # add ANTHROPIC_API_KEY
 npm run dev
 ```
+
+**Blank or white page?** The dev server often breaks if `.next` was deleted while it was running. Fix:
+
+```bash
+# Ctrl+C to stop the server, then:
+rm -rf .next
+npm run dev
+```
+
+Hard-refresh the browser (Cmd+Shift+R).
 
 `create-next-app` is not a global command — use `npx` if scaffolding a fresh folder:
 
