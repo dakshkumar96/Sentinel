@@ -6,26 +6,28 @@ Agentic spend guardian for AI-channel advertising — built for agencies.
 
 ## Dashboard features
 
-The main UI is a single agency command center for AI-channel spend (ChatGPT-style placements, Thrad publishers, and similar). Planned v1 surface:
+Agency command center for AI-channel spend (ChatGPT-style placements, Thrad publishers, and similar).
 
-| Feature | What you see |
-|--------|----------------|
-| **Live spend watch** | Per-client and per-placement spend updating in real time (mock SSE feed); calm green state by default, anomalies surface automatically. |
-| **Campaign & placement grid** | Cards for each client/placement with channel, status, and spend velocity. |
-| **Spend sparklines** | Hourly spend trends per placement — spikes turn red when out of band. |
-| **Guardrail alerts** | Instant, non-agent flags when hard limits hit (budget cap, blocklisted context) — auto-pause with no LLM “thinking” step. |
-| **Agent reasoning trace** | Step-by-step investigation: which tools ran, what they returned, conclusion, and confidence (demo hero panel). |
-| **Human-in-the-loop gates** | Slide-over **Approve / Override / Pause** when judgment is ambiguous or stakes are high; evidence bundled on the card. |
-| **Brand-safety review** | Flag when creative may mismatch conversation context (e.g. ad near layoffs chat) with transcript excerpt for review. |
-| **Spend anomaly cards** | e.g. “4× spend in 1 hour” — agent resolves as healthy scaling vs burn vs escalate. |
-| **Zero-conversion burn** | Placement spent with no conversions over a window — recommend pause with spend total. |
-| **Escalation tuning** | Only high-signal issues interrupt the human; healthy spikes logged without a gate (anti–alert-fatigue story). |
-| **Alert & audit sidebar** | Open vs resolved alerts, guardrail vs agent source, and a log of what the system did and why. |
-| **Demo scenario controls** | One-click triggers for judge demos: `healthy_spike`, `bad_spike`, `brand_safety`, `zero_conv_burn`, `guardrail_cap`. |
+**Legend:** ✅ Done · 🎬 Demo (scripted via scenario buttons) · 🔜 Planned
+
+| Status | Feature | What you see |
+|--------|---------|----------------|
+| ✅ | **Live spend watch** | Per-client and per-placement spend updating in real time (mock SSE); calm green state by default. |
+| ✅ | **Campaign & placement grid** | Cards for each client/placement with channel, status, and spend velocity. |
+| ✅ | **Spend sparklines** | Spend trend per placement; turns amber/red when a scenario fires. |
+| ✅ | **Demo scenario controls** | One-click triggers: `healthy_spike`, `bad_spike`, `brand_safety`, `zero_conv_burn`, `guardrail_cap` + reset. |
+| 🎬 | **Guardrail alerts** | Instant guardrail-style alert and auto-pause — **demo only** (`guardrail_cap` button). Not yet wired to `charter.yaml` on live ticks (Phase 2). |
+| 🎬 | **Spend anomaly cards** | Cards pulse red/amber and alerts fire — **demo only** (`healthy_spike` / `bad_spike`). No live agent investigation yet. |
+| 🎬 | **Brand-safety review** | Pre-written alert with conversation excerpt — **demo only** (`brand_safety` button). No LLM judgment yet (Phase 3). |
+| 🎬 | **Zero-conversion burn** | Scripted alert and spend burst on Contoso — **demo only** (`zero_conv_burn` button). |
+| 🎬 | **Escalation tuning** | Healthy spike skips human gate; bad spike asks for approval — **hard-coded per scenario**, not learned (Phase 3–4). |
+| 🎬 | **Human-in-the-loop gates** | Approve / Override / Dismiss on alerts in the sidebar — **not** a slide-over sheet yet (Phase 4). |
+| 🎬 | **Alert sidebar** | Open alerts, guardrail vs agent badges, human actions. No full audit log export yet (Phase 4–5). |
+| 🔜 | **Agent reasoning trace** | Tools lighting up, evidence, confidence — stub only (Phase 3–4). |
 
 **Not on the dashboard (by design):** bidding/optimization, full cross-channel reporting, or replacing platform-native hard budget controls.
 
-Implementation status: Phase 1 complete (dashboard, SSE, scenarios). Phase 2+ (guardrails, Claude agent) — see [PLAN.md](./PLAN.md).
+See [PLAN.md](./PLAN.md) for Phase 2+ (real guardrails, Claude agent, reasoning trace UI).
 
 ## Quick start
 
