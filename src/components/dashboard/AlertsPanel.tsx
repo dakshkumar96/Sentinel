@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
 import type { Alert } from "@/types";
 import {
@@ -97,38 +96,9 @@ function AlertRow({
 }
 
 export function AlertsPanel() {
-  const renderCount = useRef(0);
-  renderCount.current += 1;
   const alerts = useDashboardStore((s) => s.alerts);
   const openAlerts = useDashboardStore(useShallow(selectOpenAlerts));
   const stats = useDashboardStore(useShallow(selectEscalationStats));
-  const prevStatsRef = useRef(stats);
-  const statsNewRef = prevStatsRef.current !== stats;
-  prevStatsRef.current = stats;
-
-  // #region agent log
-  useEffect(() => {
-    fetch("http://127.0.0.1:7775/ingest/a769f5e6-d94b-40ec-9e04-7e995cc1a6b9", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Debug-Session-Id": "356d1a",
-      },
-      body: JSON.stringify({
-        sessionId: "356d1a",
-        hypothesisId: "H2-H3",
-        location: "AlertsPanel.tsx:render",
-        message: "AlertsPanel render",
-        data: {
-          renderCount: renderCount.current,
-          statsNewRef,
-          openAlertsLen: openAlerts.length,
-        },
-        timestamp: Date.now(),
-      }),
-    }).catch(() => {});
-  });
-  // #endregion
   const activeInvestigationId = useDashboardStore((s) => s.activeInvestigationId);
   const gateAlertId = useDashboardStore((s) => s.gateAlertId);
   const selectInvestigation = useDashboardStore((s) => s.selectInvestigation);

@@ -99,8 +99,8 @@ Policy in `charter.yaml`: e.g. never auto-pause above £500/day client without h
 
 ### Phase 5 — Polish (2 hrs)
 - [ ] Sound/haptics off by default; subtle pulse on red cards
-- [ ] Audit log export (JSON) for judges
-- [ ] README: 90s demo script + “rules vs agent” talking points
+- [x] Audit log export (JSON) for judges
+- [x] README: 90s demo script + “rules vs agent” talking points
 
 ---
 
