@@ -48,16 +48,17 @@ Add `ANTHROPIC_API_KEY` to `.env.local`. Without it, scenario-keyed mock agent r
 
 ### Troubleshooting
 
-**500 / blank page / `incorrect header check` / `Cannot find module './873.js'`** — corrupted `.next` cache (common after `git pull` or adding deps like Recharts). **Stop every** `npm run dev` (Ctrl+C), then:
+**500 / Internal Server Error / `Cannot find module './873.js'`** — a **stale** dev server is still running with a broken `.next` cache (very common after `git pull` or adding Recharts). Port 3000 may be dead while 3001 works — always use the URL from the terminal you just started.
+
+**Fix (one command)** — kills ports 3000–3002, deletes `.next`, starts fresh:
 
 ```bash
-npm run clean
-npm run dev
+npm run dev:clean
 ```
 
-Or one step: `npm run dev:clean`
+Or manually: Ctrl+C in **every** terminal running Next, then `npm run clean && npm run dev`.
 
-Use only **one** dev server and the URL it prints (e.g. `http://localhost:3000`). Hard-refresh (Cmd+Shift+R / Ctrl+Shift+R).
+Hard-refresh (Cmd+Shift+R). Use only **one** dev server tab.
 
 **`__webpack_modules__[moduleId] is not a function`** — same fix as above.
 
