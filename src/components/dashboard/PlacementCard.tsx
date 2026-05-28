@@ -21,9 +21,9 @@ interface PlacementCardProps {
 
 const TONE_STYLES = {
   calm: {
-    glow: "shadow-[0_0_0_1px_rgba(61,190,182,0.15)]",
-    badge: "bg-[var(--accent-dim)] text-[#3dbeb6] border-[#3dbeb6]/20",
-    dot: "bg-[#3dbeb6]",
+    glow: "shadow-[0_0_0_1px_var(--purple-glow)]",
+    badge: "bg-[var(--green-dim)] text-[var(--green)] border-[var(--green)]/20",
+    dot: "bg-[var(--green)]",
   },
   elevated: {
     glow: "shadow-[0_0_0_1px_rgba(232,165,75,0.2)]",

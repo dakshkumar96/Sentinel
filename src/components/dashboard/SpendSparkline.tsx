@@ -19,38 +19,47 @@ export function SpendSparkline({
   const innerH = height - pad * 2;
   const step = buckets.length > 1 ? innerW / (buckets.length - 1) : 0;
 
-  const points = buckets
-    .map((v, i) => {
-      const x = pad + i * step;
-      const y = pad + innerH - (v / max) * innerH;
-      return `${x},${y}`;
-    })
-    .join(" ");
-
-  const stroke = spike ? "var(--warm)" : "var(--accent)";
-  const fill = spike ? "var(--warm-dim)" : "var(--accent-dim)";
+  const barW = Math.max(4, step * 0.55);
+  const gap = step - barW;
 
   return (
     <svg
       width={width}
       height={height}
       viewBox={`0 0 ${width} ${height}`}
-      className="shrink-0 opacity-90"
+      className="shrink-0"
       aria-hidden
     >
-      <polyline
-        points={`${pad},${height - pad} ${points} ${width - pad},${height - pad}`}
-        fill={fill}
-        stroke="none"
-      />
-      <polyline
-        points={points}
-        fill="none"
-        stroke={stroke}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      {buckets.map((v, i) => {
+        const barH = Math.max(2, (v / max) * innerH);
+        const x = pad + i * step + gap / 2;
+        const y = pad + innerH - barH;
+        const fill = spike
+          ? "url(#spikeGrad)"
+          : "url(#calmGrad)";
+        return (
+          <rect
+            key={i}
+            x={x}
+            y={y}
+            width={barW}
+            height={barH}
+            rx={2}
+            fill={fill}
+            opacity={spike ? 1 : 0.85}
+          />
+        );
+      })}
+      <defs>
+        <linearGradient id="calmGrad" x1="0" y1="1" x2="0" y2="0">
+          <stop offset="0%" stopColor="#7c3aed" />
+          <stop offset="100%" stopColor="#a78bfa" />
+        </linearGradient>
+        <linearGradient id="spikeGrad" x1="0" y1="1" x2="0" y2="0">
+          <stop offset="0%" stopColor="#f59e0b" />
+          <stop offset="100%" stopColor="#fbbf24" />
+        </linearGradient>
+      </defs>
     </svg>
   );
 }

@@ -47,7 +47,7 @@ function AlertRow({
         onClick={onSelect}
         className={`panel-inset w-full border-l-2 p-3 text-left transition ${
           severityBorder[alert.severity] ?? "border-l-[var(--border-strong)]"
-        } ${selected ? "ring-1 ring-[#3dbeb6]/40 bg-[var(--accent-dim)]" : "hover:bg-white/[0.02]"}`}
+        } ${selected ? "ring-1 ring-[var(--purple)]/40 bg-[var(--purple-dim)]" : "hover:bg-[var(--bg-hover)]"}`}
       >
         <div className="flex flex-wrap items-center gap-2">
           <span className={sourceChip(alert.source)}>{alert.source}</span>
@@ -57,7 +57,7 @@ function AlertRow({
             </span>
           )}
           {!alert.requiresHuman && alert.source === "agent" && (
-            <span className="text-[10px] font-medium text-[#3dbeb6]">
+            <span className="text-[10px] font-medium text-[var(--green)]">
               Logged
             </span>
           )}

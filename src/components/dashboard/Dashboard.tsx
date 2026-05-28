@@ -97,7 +97,7 @@ export function Dashboard() {
                               ? "bg-[var(--danger)]"
                               : budgetPct >= 70
                                 ? "bg-[var(--warm)]"
-                                : "bg-[#3dbeb6]"
+                                : "bg-[var(--green)]"
                           }`}
                           style={{ width: `${budgetPct}%` }}
                         />

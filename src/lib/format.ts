@@ -7,30 +7,30 @@ const CHANNEL_LABEL: Record<Channel, string> = {
   other: "Other",
 };
 
-/** Per-channel accent for cards and chips */
+/** Muted channel chips on dark surfaces */
 export const CHANNEL_STYLE: Record<
   Channel,
   { dot: string; chip: string; line: string }
 > = {
   chatgpt: {
-    dot: "bg-[#10a37f]",
-    chip: "bg-[#10a37f]/15 text-[#6ee7b7] border-[#10a37f]/25",
-    line: "from-[#10a37f]/80 to-transparent",
+    dot: "bg-[#4ade80]",
+    chip: "bg-[#1c1c1c] text-[#a3a3a3] border-[#2a2a2a]",
+    line: "from-[#4ade80]/50 to-transparent",
   },
   claude_apps: {
-    dot: "bg-[#d97757]",
-    chip: "bg-[#d97757]/15 text-[#f5c4a8] border-[#d97757]/25",
-    line: "from-[#d97757]/70 to-transparent",
+    dot: "bg-[#fbbf24]",
+    chip: "bg-[#1c1c1c] text-[#a3a3a3] border-[#2a2a2a]",
+    line: "from-[#fbbf24]/50 to-transparent",
   },
   thrad_publisher: {
-    dot: "bg-[#5ba4e6]",
-    chip: "bg-[#5ba4e6]/15 text-[#93c5fd] border-[#5ba4e6]/25",
-    line: "from-[#5ba4e6]/70 to-transparent",
+    dot: "bg-[#60a5fa]",
+    chip: "bg-[#1c1c1c] text-[#a3a3a3] border-[#2a2a2a]",
+    line: "from-[#60a5fa]/50 to-transparent",
   },
   other: {
-    dot: "bg-[#8b949e]",
-    chip: "bg-white/5 text-[#b8c0cc] border-white/10",
-    line: "from-white/20 to-transparent",
+    dot: "bg-[#737373]",
+    chip: "bg-[#1c1c1c] text-[#737373] border-[#2a2a2a]",
+    line: "from-white/15 to-transparent",
   },
 };
 
@@ -54,7 +54,7 @@ export function statusLabel(status: Placement["status"]): string {
 }
 
 export const CLIENT_ACCENT = [
-  "border-l-[#3dbeb6]",
-  "border-l-[#e8a54b]",
-  "border-l-[#9b8fd9]",
+  "border-l-[var(--purple-strong)]",
+  "border-l-[var(--green)]",
+  "border-l-[var(--blue)]",
 ] as const;

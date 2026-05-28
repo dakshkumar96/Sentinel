@@ -10,7 +10,7 @@ export function GuardrailAlerts() {
 
   return (
     <section
-      className="panel overflow-hidden border-[var(--guard)]/25 bg-gradient-to-r from-[var(--guard-dim)] to-transparent"
+      className="panel overflow-hidden border-[var(--purple)]/20 bg-[var(--bg-panel)]"
       aria-label="Guardrail alerts"
     >
       <header className="flex items-center gap-3 border-b border-[var(--border-subtle)] px-5 py-3">

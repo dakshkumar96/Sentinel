@@ -46,7 +46,7 @@ export function ApprovalGate() {
     <div className="fixed inset-0 z-50 flex justify-end">
       <button
         type="button"
-        className="absolute inset-0 bg-[#0a0d11]/75 backdrop-blur-md"
+        className="absolute inset-0 bg-[#0a0a0a]/85 backdrop-blur-md"
         aria-label="Close approval gate"
         onClick={closeGate}
       />

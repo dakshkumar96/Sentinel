@@ -13,7 +13,7 @@ const TOOL_LABELS: Record<string, string> = {
 
 const VERDICT_STYLES = {
   healthy:
-    "text-[#3dbeb6] bg-[var(--accent-dim)] border-[#3dbeb6]/30",
+    "text-[var(--green)] bg-[var(--green-dim)] border-[var(--green)]/30",
   act: "text-[var(--warm)] bg-[var(--warm-dim)] border-[var(--warm)]/30",
   escalate:
     "text-[var(--danger)] bg-[var(--danger-dim)] border-[var(--danger)]/30",
@@ -136,7 +136,7 @@ export function ReasoningTrace({ investigation }: ReasoningTraceProps) {
                 → Human gate
               </span>
             ) : (
-              <span className="text-xs font-medium text-[#3dbeb6]">
+              <span className="text-xs font-medium text-[var(--green)]">
                 → Logged only
               </span>
             )}

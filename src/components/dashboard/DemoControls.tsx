@@ -65,9 +65,9 @@ export function DemoControls() {
             type="button"
             disabled={!!loading}
             onClick={() => runScenario(s.id)}
-            className="group flex w-full items-start gap-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-inset)] px-3 py-2.5 text-left transition hover:border-[#3dbeb6]/30 hover:bg-[var(--accent-dim)] disabled:opacity-50"
+            className="group flex w-full items-start gap-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-inset)] px-3 py-2.5 text-left transition hover:border-[var(--purple)]/40 hover:bg-[var(--purple-dim)] disabled:opacity-50"
           >
-            <span className="font-display text-lg leading-none text-[var(--text-muted)] group-hover:text-[#3dbeb6]">
+            <span className="font-display text-lg leading-none text-[var(--text-muted)] group-hover:text-[var(--purple)]">
               {s.num}
             </span>
             <span className="min-w-0">
