@@ -2,7 +2,7 @@
 
 Agentic spend guardian for AI-channel advertising — built for agencies.
 
-**Status:** Phase 1 live — dashboard + mock stream + demo scenarios.
+**Status:** Phase 1–4 demo complete — live dashboard, charter guardrails, mock agent, HITL sidebar.
 
 ## Dashboard features
 
@@ -16,18 +16,18 @@ Agency command center for AI-channel spend (ChatGPT-style placements, Thrad publ
 | ✅ | **Campaign & placement grid** | Cards for each client/placement with channel, status, and spend velocity. |
 | ✅ | **Spend sparklines** | Spend trend per placement; turns amber/red when a scenario fires. |
 | ✅ | **Demo scenario controls** | One-click triggers: `healthy_spike`, `bad_spike`, `brand_safety`, `zero_conv_burn`, `guardrail_cap` + reset. |
-| 🎬 | **Guardrail alerts** | Instant guardrail-style alert and auto-pause — **demo only** (`guardrail_cap` button). Not yet wired to `charter.yaml` on live ticks (Phase 2). |
-| 🎬 | **Spend anomaly cards** | Cards pulse red/amber and alerts fire — **demo only** (`healthy_spike` / `bad_spike`). No live agent investigation yet. |
-| 🎬 | **Brand-safety review** | Pre-written alert with conversation excerpt — **demo only** (`brand_safety` button). No LLM judgment yet (Phase 3). |
-| 🎬 | **Zero-conversion burn** | Scripted alert and spend burst on Contoso — **demo only** (`zero_conv_burn` button). |
-| 🎬 | **Escalation tuning** | Healthy spike skips human gate; bad spike asks for approval — **hard-coded per scenario**, not learned (Phase 3–4). |
-| 🎬 | **Human-in-the-loop gates** | Approve / Override / Dismiss on alerts in the sidebar — **not** a slide-over sheet yet (Phase 4). |
-| 🎬 | **Alert sidebar** | Open alerts, guardrail vs agent badges, human actions. No full audit log export yet (Phase 4–5). |
-| 🔜 | **Agent reasoning trace** | Tools lighting up, evidence, confidence — stub only (Phase 3–4). |
+| ✅ | **Guardrail alerts** | Instant alerts from `charter.yaml` on live ticks (budget cap, blocklist) + `guardrail_cap` scenario; auto-pause, no LLM. |
+| ✅ | **Spend anomaly cards** | `healthy_spike` / `bad_spike` fire spend + agent investigation; cards pulse amber/red on out-of-band spend. |
+| ✅ | **Brand-safety review** | `brand_safety` scenario — mock agent checks conversation + brand guidelines; escalate with evidence (no live Claude yet). |
+| ✅ | **Zero-conversion burn** | `zero_conv_burn` scenario — spend burst, agent recommends pause with HITL gate. |
+| ✅ | **Escalation tuning** | Healthy spike skips human gate; bad spike asks for approval — hard-coded per scenario + charter tighten rules. |
+| ✅ | **Human-in-the-loop gates** | Approve / Override / Dismiss on agent alerts in the sidebar (slide-over sheet 🔜). |
+| ✅ | **Alert sidebar** | Open vs resolved, guardrail vs agent badges, escalation counts, click-to-view trace. Audit log export 🔜. |
+| ✅ | **Agent reasoning trace** | Tools stage sequentially, evidence, verdict, confidence, escalation outcome on main panel. |
 
 **Not on the dashboard (by design):** bidding/optimization, full cross-channel reporting, or replacing platform-native hard budget controls.
 
-See [PLAN.md](./PLAN.md) for Phase 2+ (real guardrails, Claude agent, reasoning trace UI).
+See [PLAN.md](./PLAN.md) for remaining polish (Claude API agent, audit export, slide-over approval sheet).
 
 ## Quick start
 
@@ -67,7 +67,7 @@ cd sentinel
 npx vercel --prod
 ```
 
-No env vars required for Phase 1 (mock data only). Add `ANTHROPIC_API_KEY` in Vercel when Phase 3 agent work ships.
+No env vars required for the demo (mock stream + scenario-keyed agent). Add `ANTHROPIC_API_KEY` in Vercel when wiring live Claude investigations.
 
 `create-next-app` is not a global command — use `npx` if scaffolding a fresh folder:
 
