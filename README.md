@@ -46,6 +46,27 @@ npm run dev
 
 Hard-refresh the browser (Cmd+Shift+R).
 
+## Deploy to production (Vercel)
+
+Code is on `main` at [github.com/dakshkumar96/Sentinel](https://github.com/dakshkumar96/Sentinel).
+
+**Option A — Vercel dashboard (recommended, no CLI login):**
+
+1. Go to [vercel.com/new](https://vercel.com/new)
+2. Import **dakshkumar96/Sentinel**
+3. Root directory: `sentinel` if the repo root is the monorepo parent, otherwise leave as **`.`** if the Next app is the repo root
+4. Deploy — every push to `main` auto-deploys
+
+**Option B — CLI:**
+
+```bash
+vercel login
+cd sentinel
+npx vercel --prod
+```
+
+No env vars required for Phase 1 (mock data only). Add `ANTHROPIC_API_KEY` in Vercel when Phase 3 agent work ships.
+
 `create-next-app` is not a global command — use `npx` if scaffolding a fresh folder:
 
 ```bash
