@@ -1,8 +1,8 @@
-import { resetToHealthy } from "@/server/mock/state";
+import { getIngestHub } from "@/server/ingest/hub";
 
 export const dynamic = "force-dynamic";
 
 export async function POST() {
-  resetToHealthy();
+  getIngestHub().reset();
   return Response.json({ ok: true });
 }

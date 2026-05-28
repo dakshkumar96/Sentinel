@@ -1,4 +1,4 @@
-import { resolveAlert } from "@/server/mock/state";
+import { getIngestHub } from "@/server/ingest/hub";
 import type { AlertStatus } from "@/types";
 
 export const dynamic = "force-dynamic";
@@ -25,6 +25,6 @@ export async function POST(request: Request) {
     );
   }
 
-  resolveAlert(body.id, body.status);
+  getIngestHub().resolveAlert(body.id, body.status);
   return Response.json({ ok: true, id: body.id, status: body.status });
 }

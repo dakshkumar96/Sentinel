@@ -1,105 +1,41 @@
-"use client";
-
 import { create } from "zustand";
-import type {
-  Alert,
-  Client,
-  Placement,
-} from "@/types";
-import type { PlacementMetrics, StreamMessage } from "@/types/dashboard";
+import type { Alert, AlertStatus, Client, DemoScenarioId, Placement } from "@/types";
+import type { PlacementLiveState, StreamMessage } from "@/types/stream";
 
 interface DashboardState {
   connected: boolean;
   clients: Client[];
   placements: Placement[];
-  metrics: Record<string, PlacementMetrics>;
+  states: Record<string, PlacementLiveState>;
   alerts: Alert[];
-  scenarioLoading: string | null;
-
-  connect: () => void;
-  disconnect: () => void;
-  runScenario: (id: string) => Promise<void>;
+  scenarioLoading: DemoScenarioId | null;
+  setConnected: (connected: boolean) => void;
+  applyMessage: (msg: StreamMessage) => void;
+  resolveAlert: (id: string, status: AlertStatus) => Promise<void>;
+  runScenario: (id: DemoScenarioId) => Promise<void>;
   resetDemo: () => Promise<void>;
-  resolveAlert: (id: string, status: Alert["status"]) => Promise<void>;
 }
 
-let eventSource: EventSource | null = null;
-
-function applyMessage(
-  set: (fn: (s: DashboardState) => Partial<DashboardState>) => void,
-  msg: StreamMessage,
-) {
-  switch (msg.type) {
-    case "snapshot":
-      set(() => ({
-        clients: msg.data.clients,
-        placements: msg.data.placements,
-        metrics: msg.data.metrics,
-        alerts: msg.data.alerts,
-      }));
-      break;
-    case "spend_event":
-      break;
-    case "metrics":
-      set((s) => ({
-        metrics: { ...s.metrics, [msg.data.placementId]: msg.data.metrics },
-      }));
-      break;
-    case "placement_status":
-      set((s) => ({
-        placements: s.placements.map((p) =>
-          p.id === msg.data.placementId
-            ? { ...p, status: msg.data.status }
-            : p,
-        ),
-      }));
-      break;
-    case "alert": {
-      set((s) => {
-        const idx = s.alerts.findIndex((a) => a.id === msg.data.id);
-        const alerts =
-          idx >= 0
-            ? s.alerts.map((a, i) => (i === idx ? msg.data : a))
-            : [msg.data, ...s.alerts];
-        return { alerts };
-      });
-      break;
-    }
-  }
-}
+const MAX_ALERTS = 50;
 
 export const useDashboardStore = create<DashboardState>((set) => ({
   connected: false,
   clients: [],
   placements: [],
-  metrics: {},
+  states: {},
   alerts: [],
   scenarioLoading: null,
-
-  connect: () => {
-    if (eventSource) return;
-    const es = new EventSource("/api/events/stream");
-    eventSource = es;
-
-    es.onopen = () => set({ connected: true });
-    es.onerror = () => set({ connected: false });
-
-    es.onmessage = (ev) => {
-      try {
-        const msg = JSON.parse(ev.data) as StreamMessage;
-        applyMessage(set, msg);
-      } catch {
-        /* ignore parse errors */
-      }
-    };
+  setConnected: (connected) => set({ connected }),
+  resolveAlert: async (id, status) => {
+    await fetch("/api/alerts/resolve", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, status }),
+    });
+    set((s) => ({
+      alerts: s.alerts.map((a) => (a.id === id ? { ...a, status } : a)),
+    }));
   },
-
-  disconnect: () => {
-    eventSource?.close();
-    eventSource = null;
-    set({ connected: false });
-  },
-
   runScenario: async (id) => {
     set({ scenarioLoading: id });
     try {
@@ -112,21 +48,56 @@ export const useDashboardStore = create<DashboardState>((set) => ({
       set({ scenarioLoading: null });
     }
   },
-
   resetDemo: async () => {
     await fetch("/api/demo/reset", { method: "POST" });
   },
-
-  resolveAlert: async (id, status) => {
-    await fetch("/api/alerts/resolve", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, status }),
-    });
+  applyMessage: (msg) => {
+    switch (msg.type) {
+      case "init":
+        set({
+          clients: msg.clients,
+          placements: msg.placements,
+          states: Object.fromEntries(
+            msg.states.map((s) => [s.placementId, s]),
+          ),
+          alerts: [],
+        });
+        break;
+      case "spend":
+        set((s) => ({
+          states: { ...s.states, [msg.state.placementId]: msg.state },
+        }));
+        break;
+      case "alert":
+        set((s) => ({
+          alerts: [msg.alert, ...s.alerts].slice(0, MAX_ALERTS),
+        }));
+        break;
+      case "alert_status":
+        set((s) => ({
+          alerts: s.alerts.map((a) =>
+            a.id === msg.id ? { ...a, status: msg.status } : a,
+          ),
+        }));
+        break;
+      case "placements_paused":
+        set((s) => {
+          const placements = s.placements.map((p) =>
+            msg.placementIds.includes(p.id)
+              ? { ...p, status: "paused" as const }
+              : p,
+          );
+          const states = { ...s.states };
+          for (const id of msg.placementIds) {
+            const st = states[id];
+            if (st) states[id] = { ...st, status: "paused" };
+          }
+          return { placements, states };
+        });
+        break;
+    }
   },
 }));
 
-export function useClientMap() {
-  const clients = useDashboardStore((s) => s.clients);
-  return Object.fromEntries(clients.map((c) => [c.id, c]));
-}
+export const selectGuardrailAlerts = (s: DashboardState) =>
+  s.alerts.filter((a) => a.source === "guardrail");

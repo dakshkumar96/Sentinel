@@ -1,59 +1,56 @@
 "use client";
 
+import { isOutOfBand } from "@/lib/spend/metrics";
+
 interface SpendSparklineProps {
-  data: number[];
-  health: "healthy" | "warning" | "critical";
+  buckets: number[];
   width?: number;
   height?: number;
 }
 
-const stroke: Record<string, string> = {
-  healthy: "#34d399",
-  warning: "#fbbf24",
-  critical: "#f87171",
-};
-
 export function SpendSparkline({
-  data,
-  health,
+  buckets,
   width = 120,
   height = 36,
 }: SpendSparklineProps) {
-  if (data.length < 2) {
-    return (
-      <svg width={width} height={height} className="opacity-30">
-        <line
-          x1={0}
-          y1={height / 2}
-          x2={width}
-          y2={height / 2}
-          stroke="#52525b"
-        />
-      </svg>
-    );
-  }
-
-  const max = Math.max(...data, 1);
-  const min = Math.min(...data);
-  const range = max - min || 1;
+  const max = Math.max(...buckets, 1);
+  const spike = isOutOfBand(buckets);
   const pad = 2;
-  const points = data
+  const innerW = width - pad * 2;
+  const innerH = height - pad * 2;
+  const step = buckets.length > 1 ? innerW / (buckets.length - 1) : 0;
+
+  const points = buckets
     .map((v, i) => {
-      const x = pad + (i / (data.length - 1)) * (width - pad * 2);
-      const y = pad + (1 - (v - min) / range) * (height - pad * 2);
+      const x = pad + i * step;
+      const y = pad + innerH - (v / max) * innerH;
       return `${x},${y}`;
     })
     .join(" ");
 
+  const stroke = spike ? "#ef4444" : "#34d399";
+  const fill = spike ? "rgba(239,68,68,0.15)" : "rgba(52,211,153,0.12)";
+
   return (
-    <svg width={width} height={height} className="overflow-visible">
+    <svg
+      width={width}
+      height={height}
+      viewBox={`0 0 ${width} ${height}`}
+      className="shrink-0"
+      aria-hidden
+    >
       <polyline
-        fill="none"
-        stroke={stroke[health]}
-        strokeWidth={2}
-        strokeLinejoin="round"
-        strokeLinecap="round"
+        points={`${pad},${height - pad} ${points} ${width - pad},${height - pad}`}
+        fill={fill}
+        stroke="none"
+      />
+      <polyline
         points={points}
+        fill="none"
+        stroke={stroke}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );

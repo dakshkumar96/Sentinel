@@ -7,17 +7,10 @@
     "status": "active"
   },
   {
-    "id": "plc_thrad_acme_01",
+    "id": "plc_claude_acme_02",
     "clientId": "acme_retail",
-    "channel": "thrad_publisher",
-    "name": "Acme — Thrad Lifestyle",
-    "status": "active"
-  },
-  {
-    "id": "plc_chatgpt_north_01",
-    "clientId": "northwind_travel",
-    "channel": "chatgpt",
-    "name": "Northwind — ChatGPT Travel",
+    "channel": "claude_apps",
+    "name": "Acme — Claude Apps Promo",
     "status": "active"
   },
   {
@@ -28,17 +21,24 @@
     "status": "active"
   },
   {
+    "id": "plc_chatgpt_north_02",
+    "clientId": "northwind_travel",
+    "channel": "chatgpt",
+    "name": "Northwind — ChatGPT Getaways",
+    "status": "active"
+  },
+  {
     "id": "plc_chatgpt_contoso_01",
     "clientId": "contoso_fintech",
     "channel": "chatgpt",
-    "name": "Contoso — ChatGPT B2B",
-    "status": "learning"
+    "name": "Contoso — ChatGPT Savings",
+    "status": "active"
   },
   {
-    "id": "plc_claude_contoso_01",
+    "id": "plc_thrad_contoso_02",
     "clientId": "contoso_fintech",
-    "channel": "claude_apps",
-    "name": "Contoso — Claude Apps",
+    "channel": "thrad_publisher",
+    "name": "Contoso — Thrad Finance Tips",
     "status": "active"
   }
 ]

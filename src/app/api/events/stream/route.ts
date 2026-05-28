@@ -1,34 +1,30 @@
-import { attachSSE } from "@/server/mock/stream";
-import type { StreamMessage } from "@/server/mock/state";
+import { getIngestHub } from "@/server/ingest/hub";
+import type { StreamMessage } from "@/types/stream";
 
 export const dynamic = "force-dynamic";
-export const runtime = "nodejs";
-// Allow longer-lived SSE on Vercel (Pro); Hobby may reconnect more often
-export const maxDuration = 60;
 
 export async function GET(request: Request) {
+  const hub = getIngestHub();
   const encoder = new TextEncoder();
 
   const stream = new ReadableStream({
     start(controller) {
       const send = (msg: StreamMessage) => {
-        try {
-          controller.enqueue(
-            encoder.encode(`data: ${JSON.stringify(msg)}\n\n`),
-          );
-        } catch {
-          /* client disconnected */
-        }
+        controller.enqueue(
+          encoder.encode(`data: ${JSON.stringify(msg)}\n\n`),
+        );
       };
 
-      attachSSE(send, request.signal);
+      const unsubscribe = hub.subscribe(send);
+
+      const heartbeat = setInterval(() => {
+        controller.enqueue(encoder.encode(": ping\n\n"));
+      }, 15_000);
 
       request.signal.addEventListener("abort", () => {
-        try {
-          controller.close();
-        } catch {
-          /* already closed */
-        }
+        clearInterval(heartbeat);
+        unsubscribe();
+        controller.close();
       });
     },
   });
