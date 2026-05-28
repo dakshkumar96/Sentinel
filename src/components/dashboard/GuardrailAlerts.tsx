@@ -10,26 +10,41 @@ export function GuardrailAlerts() {
 
   return (
     <section
-      className="rounded-xl border border-red-500/40 bg-red-950/40 p-4"
+      className="panel overflow-hidden border-[var(--guard)]/25 bg-gradient-to-r from-[var(--guard-dim)] to-transparent"
       aria-label="Guardrail alerts"
     >
-      <header className="mb-3 flex items-center gap-2">
-        <span className="flex h-2 w-2 animate-pulse rounded-full bg-red-500" />
-        <h2 className="text-sm font-semibold text-red-300">
-          Guardrail — instant action
-        </h2>
-        <span className="text-xs text-red-400/80">No agent / no LLM</span>
+      <header className="flex items-center gap-3 border-b border-[var(--border-subtle)] px-5 py-3">
+        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--guard-dim)] text-[var(--guard)]">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
+            <path
+              d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
+          </svg>
+        </span>
+        <div>
+          <h2 className="font-display text-sm font-semibold text-[var(--text-primary)]">
+            Guardrail fired
+          </h2>
+          <p className="text-xs text-[var(--guard)]">Deterministic · no LLM</p>
+        </div>
       </header>
-      <ul className="space-y-2">
+      <ul className="space-y-2 p-4">
         {alerts.slice(0, 5).map((alert) => (
           <li
             key={alert.id}
-            className="rounded-lg border border-red-500/25 bg-zinc-950/50 px-3 py-2"
+            className="panel-inset px-4 py-3 border-l-2 border-l-[var(--guard)]"
           >
-            <p className="text-sm font-medium text-red-200">{alert.title}</p>
-            <p className="mt-0.5 text-xs text-zinc-400">{alert.summary}</p>
+            <p className="text-sm font-medium text-[var(--text-primary)]">
+              {alert.title}
+            </p>
+            <p className="mt-1 text-xs leading-relaxed text-[var(--text-muted)]">
+              {alert.summary}
+            </p>
             {alert.recommendedAction === "pause" && (
-              <p className="mt-1 text-xs font-medium text-red-400">
+              <p className="mt-2 text-[10px] font-semibold uppercase tracking-wide text-[var(--guard)]">
                 Auto-pause applied
               </p>
             )}

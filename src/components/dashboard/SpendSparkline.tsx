@@ -1,21 +1,20 @@
 "use client";
 
-import { isOutOfBand } from "@/lib/spend/metrics";
-
 interface SpendSparklineProps {
   buckets: number[];
   width?: number;
   height?: number;
+  spike?: boolean;
 }
 
 export function SpendSparkline({
   buckets,
-  width = 120,
-  height = 36,
+  width = 112,
+  height = 40,
+  spike = false,
 }: SpendSparklineProps) {
   const max = Math.max(...buckets, 1);
-  const spike = isOutOfBand(buckets);
-  const pad = 2;
+  const pad = 3;
   const innerW = width - pad * 2;
   const innerH = height - pad * 2;
   const step = buckets.length > 1 ? innerW / (buckets.length - 1) : 0;
@@ -28,15 +27,15 @@ export function SpendSparkline({
     })
     .join(" ");
 
-  const stroke = spike ? "#ef4444" : "#34d399";
-  const fill = spike ? "rgba(239,68,68,0.15)" : "rgba(52,211,153,0.12)";
+  const stroke = spike ? "var(--warm)" : "var(--accent)";
+  const fill = spike ? "var(--warm-dim)" : "var(--accent-dim)";
 
   return (
     <svg
       width={width}
       height={height}
       viewBox={`0 0 ${width} ${height}`}
-      className="shrink-0"
+      className="shrink-0 opacity-90"
       aria-hidden
     >
       <polyline
@@ -48,7 +47,7 @@ export function SpendSparkline({
         points={points}
         fill="none"
         stroke={stroke}
-        strokeWidth="1.5"
+        strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
       />

@@ -8,16 +8,18 @@ import {
   useDashboardStore,
 } from "@/lib/store/dashboard-store";
 
-const severityStyles: Record<string, string> = {
-  info: "border-zinc-700 bg-zinc-900/80",
-  warning: "border-amber-500/40 bg-amber-500/5",
-  critical: "border-red-500/50 bg-red-500/10",
+const severityBorder: Record<string, string> = {
+  info: "border-l-[var(--accent)]",
+  warning: "border-l-[var(--warm)]",
+  critical: "border-l-[var(--danger)]",
 };
 
-const sourceBadge: Record<string, string> = {
-  guardrail: "bg-violet-500/20 text-violet-300",
-  agent: "bg-sky-500/20 text-sky-300",
-};
+function sourceChip(source: Alert["source"]) {
+  if (source === "guardrail") {
+    return "chip border border-[var(--guard)]/30 bg-[var(--guard-dim)] text-[var(--guard)]";
+  }
+  return "chip border border-[var(--agent)]/30 bg-[var(--agent-dim)] text-[var(--agent)]";
+}
 
 function AlertRow({
   alert,
@@ -43,40 +45,31 @@ function AlertRow({
       <button
         type="button"
         onClick={onSelect}
-        className={`w-full rounded-lg border p-3 text-left transition ${
-          severityStyles[alert.severity]
-        } ${selected ? "ring-1 ring-sky-500/50" : "hover:border-zinc-600"} ${
-          pending && alert.severity === "critical" ? "animate-pulse" : ""
-        }`}
+        className={`panel-inset w-full border-l-2 p-3 text-left transition ${
+          severityBorder[alert.severity] ?? "border-l-[var(--border-strong)]"
+        } ${selected ? "ring-1 ring-[#3dbeb6]/40 bg-[var(--accent-dim)]" : "hover:bg-white/[0.02]"}`}
       >
         <div className="flex flex-wrap items-center gap-2">
-          <span
-            className={`rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase ${sourceBadge[alert.source]}`}
-          >
-            {alert.source}
-          </span>
+          <span className={sourceChip(alert.source)}>{alert.source}</span>
           {alert.requiresHuman && pending && (
-            <span className="text-[10px] font-medium uppercase text-amber-400">
-              Needs approval
+            <span className="text-[10px] font-semibold uppercase tracking-wide text-[var(--warm)]">
+              Needs you
             </span>
           )}
           {!alert.requiresHuman && alert.source === "agent" && (
-            <span className="text-[10px] font-medium uppercase text-emerald-500/90">
-              Auto-logged
-            </span>
-          )}
-          {alert.source === "guardrail" && (
-            <span className="text-[10px] font-medium uppercase text-violet-400/90">
-              No LLM
+            <span className="text-[10px] font-medium text-[#3dbeb6]">
+              Logged
             </span>
           )}
         </div>
-        <h3 className="mt-2 text-sm font-medium text-zinc-100">{alert.title}</h3>
-        <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-zinc-400">
+        <h3 className="mt-2 text-sm font-medium text-[var(--text-primary)]">
+          {alert.title}
+        </h3>
+        <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-[var(--text-muted)]">
           {alert.summary}
         </p>
         {resolved && (
-          <p className="mt-2 text-[10px] uppercase tracking-wide text-zinc-600">
+          <p className="mt-2 text-[10px] uppercase tracking-wide text-[var(--text-muted)]">
             {alert.status.replace("_", " ")}
           </p>
         )}
@@ -86,9 +79,9 @@ function AlertRow({
         <button
           type="button"
           onClick={() => openGate(alert.id)}
-          className="mt-2 w-full rounded-md border border-amber-500/40 bg-amber-500/10 py-1.5 text-xs font-medium text-amber-300 hover:bg-amber-500/20"
+          className="mt-2 w-full rounded-lg border border-[var(--warm)]/30 bg-[var(--warm-dim)] py-2 text-xs font-semibold text-[var(--warm)] transition hover:bg-[var(--warm)]/20"
         >
-          Review in approval gate →
+          Open approval gate →
         </button>
       )}
     </li>
@@ -122,25 +115,30 @@ export function AlertsPanel() {
   };
 
   return (
-    <aside className="flex max-h-[calc(100vh-8rem)] flex-col rounded-xl border border-zinc-800 bg-zinc-900/50">
-      <header className="border-b border-zinc-800 px-4 py-3">
-        <h2 className="text-sm font-semibold text-zinc-200">Alerts</h2>
-        <p className="mt-1 text-xs text-zinc-500">
+    <aside className="panel flex max-h-[calc(100vh-8rem)] flex-col overflow-hidden">
+      <header className="border-b border-[var(--border-subtle)] px-4 py-4">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">
+          Inbox
+        </p>
+        <h2 className="font-display mt-0.5 text-base font-semibold text-[var(--text-primary)]">
+          Alerts
+        </h2>
+        <p className="mt-1 text-xs text-[var(--text-muted)]">
           {stats.pending === 0
             ? `${stats.signals} signals · ${stats.escalations} escalations`
-            : `${stats.pending} need approval · ${stats.signals} total`}
+            : `${stats.pending} awaiting you · ${stats.signals} total`}
         </p>
       </header>
 
-      <div className="flex-1 overflow-y-auto p-3 space-y-4">
+      <div className="flex-1 space-y-5 overflow-y-auto p-3">
         <section>
-          <h3 className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-zinc-500">
+          <h3 className="mb-2 text-[10px] font-semibold uppercase tracking-[0.15em] text-[var(--text-muted)]">
             Open
           </h3>
           <ul className="space-y-2">
             {openAlerts.length === 0 ? (
-              <li className="rounded-lg border border-dashed border-zinc-800 p-4 text-center text-xs text-zinc-600">
-                All clear — run a demo scenario
+              <li className="panel-inset border-dashed py-8 text-center text-xs text-[var(--text-muted)]">
+                All clear — run a scenario
               </li>
             ) : (
               openAlerts.map((a) => (
@@ -160,10 +158,10 @@ export function AlertsPanel() {
 
         {resolved.length > 0 && (
           <section>
-            <h3 className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-zinc-500">
-              Resolved / logged
+            <h3 className="mb-2 text-[10px] font-semibold uppercase tracking-[0.15em] text-[var(--text-muted)]">
+              Resolved
             </h3>
-            <ul className="space-y-2 opacity-80">
+            <ul className="space-y-2 opacity-75">
               {resolved.slice(0, 8).map((a) => (
                 <AlertRow
                   key={a.id}

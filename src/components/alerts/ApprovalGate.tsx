@@ -46,24 +46,26 @@ export function ApprovalGate() {
     <div className="fixed inset-0 z-50 flex justify-end">
       <button
         type="button"
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        className="absolute inset-0 bg-[#0a0d11]/75 backdrop-blur-md"
         aria-label="Close approval gate"
         onClick={closeGate}
       />
       <aside
-        className="relative flex h-full w-full max-w-md flex-col border-l border-zinc-800 bg-zinc-950 shadow-2xl"
+        className="relative flex h-full w-full max-w-md flex-col border-l border-[var(--border-strong)] bg-[var(--bg-elevated)] shadow-[-24px_0_80px_rgba(0,0,0,0.5)]"
         role="dialog"
         aria-labelledby="approval-gate-title"
       >
-        <header className="border-b border-zinc-800 px-5 py-4">
+        <div className="h-1 w-full bg-gradient-to-r from-[var(--warm)] via-[var(--warm)]/50 to-transparent" />
+
+        <header className="border-b border-[var(--border-subtle)] px-6 py-5">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-amber-400">
-                Human approval required
+              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--warm)]">
+                Your call
               </p>
               <h2
                 id="approval-gate-title"
-                className="mt-1 text-lg font-semibold text-zinc-100"
+                className="font-display mt-1 text-xl font-semibold text-[var(--text-primary)]"
               >
                 {alert.title}
               </h2>
@@ -71,80 +73,74 @@ export function ApprovalGate() {
             <button
               type="button"
               onClick={closeGate}
-              className="rounded-md p-1 text-zinc-500 hover:bg-zinc-800 hover:text-zinc-300"
+              className="btn-ghost flex h-9 w-9 items-center justify-center p-0 text-lg"
               aria-label="Close"
             >
-              ✕
+              ×
             </button>
           </div>
-          <p className="mt-2 text-sm leading-relaxed text-zinc-400">
+          <p className="mt-3 text-sm leading-relaxed text-[var(--text-secondary)]">
             {alert.summary}
           </p>
           {alert.recommendedAction && alert.recommendedAction !== "none" && (
-            <p className="mt-2 text-xs text-amber-400/90">
-              Agent recommends: <strong>{actionLabel(alert)}</strong>
+            <p className="mt-3 panel-inset px-3 py-2 text-xs text-[var(--warm)]">
+              Agent recommends:{" "}
+              <strong className="font-semibold">{actionLabel(alert)}</strong>
             </p>
           )}
         </header>
 
-        <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
+        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
           {activeInvestigation && (
             <section>
-              <h3 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+              <h3 className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[var(--text-muted)]">
                 Evidence
               </h3>
-              <ul className="mt-2 space-y-2">
-                {activeInvestigation.toolCalls.map((call) => (
+              <ul className="mt-3 space-y-2">
+                {activeInvestigation.toolCalls.map((call, i) => (
                   <li
                     key={call.ts + call.tool}
-                    className="rounded-lg border border-zinc-800 bg-zinc-900/50 px-3 py-2"
+                    className="panel-inset border-l-2 border-l-[var(--agent)] px-3 py-2.5"
                   >
-                    <p className="text-xs font-medium text-sky-300">
-                      {call.tool.replace(/_/g, " ")}
+                    <p className="text-xs font-medium text-[var(--agent)]">
+                      {i + 1}. {call.tool.replace(/_/g, " ")}
                     </p>
-                    <p className="mt-1 text-xs text-zinc-400">
+                    <p className="mt-1 text-xs leading-relaxed text-[var(--text-muted)]">
                       {call.outputSummary}
                     </p>
                   </li>
                 ))}
               </ul>
-              <p className="mt-3 text-sm text-zinc-300">
+              <p className="mt-4 text-sm text-[var(--text-secondary)]">
                 {activeInvestigation.reasoning}
               </p>
-              <p className="mt-2 text-xs text-zinc-500">
-                Confidence{" "}
-                <span className="tabular-nums text-zinc-300">
-                  {Math.round(activeInvestigation.confidence * 100)}%
-                </span>
-                {" · "}
-                Verdict{" "}
-                <span className="uppercase text-zinc-300">
-                  {activeInvestigation.verdict}
-                </span>
+              <p className="mt-2 font-mono-data text-xs text-[var(--text-muted)]">
+                {Math.round(activeInvestigation.confidence * 100)}% confidence ·{" "}
+                {activeInvestigation.verdict}
               </p>
             </section>
           )}
         </div>
 
-        <footer className="border-t border-zinc-800 p-5 space-y-2">
+        <footer className="border-t border-[var(--border-subtle)] bg-[var(--bg-inset)] p-6 space-y-2">
           <button
             type="button"
             onClick={() => handleResolve("approved")}
-            className="w-full rounded-lg bg-emerald-600 py-2.5 text-sm font-medium text-white hover:bg-emerald-500"
+            className="btn-primary w-full py-3 text-sm"
           >
             Approve {alert.recommendedAction === "pause" ? "pause" : "action"}
           </button>
           <button
             type="button"
             onClick={() => handleResolve("overridden")}
-            className="w-full rounded-lg border border-zinc-600 py-2.5 text-sm font-medium text-zinc-200 hover:bg-zinc-800"
+            className="btn-ghost w-full py-3 text-sm font-medium"
           >
             Override — keep running
           </button>
           <button
             type="button"
             onClick={() => handleResolve("dismissed")}
-            className="w-full rounded-lg py-2 text-sm text-zinc-500 hover:text-zinc-300"
+            className="w-full py-2 text-sm text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
           >
             Dismiss
           </button>

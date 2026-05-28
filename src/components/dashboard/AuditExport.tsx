@@ -29,9 +29,18 @@ export function AuditExport() {
       type="button"
       disabled={loading}
       onClick={exportLog}
-      className="w-full rounded-lg border border-zinc-700 py-2 text-xs text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200 disabled:opacity-50"
+      className="btn-ghost flex w-full items-center justify-center gap-2 py-2.5 text-xs font-medium disabled:opacity-50"
     >
-      {loading ? "Exporting…" : "Export audit log (JSON)"}
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
+        <path
+          d="M12 3v12m0 0l4-4m-4 4l-4-4M4 19h16"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+      {loading ? "Exporting…" : "Export audit log"}
     </button>
   );
 }
