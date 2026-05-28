@@ -47,15 +47,17 @@ Add `ANTHROPIC_API_KEY` to `.env.local`. Without it, scenario-keyed mock agent r
 
 ### Troubleshooting
 
-If the page is blank or errors after a git pull:
+**`__webpack_modules__[moduleId] is not a function`** — stale dev cache or two servers running:
 
-```bash
-# Stop dev server (Ctrl+C), then:
-rm -rf .next    # Windows PowerShell: Remove-Item -Recurse -Force .next
+```powershell
+# Stop ALL dev servers (Ctrl+C in every terminal), then:
+Remove-Item -Recurse -Force .next
 npm run dev
 ```
 
-Hard-refresh the browser (Ctrl+Shift+R).
+Use only **one** tab at the URL the terminal prints (e.g. `http://localhost:3000`). Hard-refresh (Ctrl+Shift+R).
+
+If the page is blank after a git pull, run the same `.next` cleanup above.
 
 ---
 

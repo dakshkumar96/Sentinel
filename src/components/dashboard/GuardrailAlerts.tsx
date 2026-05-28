@@ -1,10 +1,17 @@
 "use client";
 
-import { useShallow } from "zustand/react/shallow";
-import { selectGuardrailAlerts, useDashboardStore } from "@/lib/store/dashboard-store";
+import { useMemo } from "react";
+import {
+  filterGuardrailAlerts,
+  useDashboardStore,
+} from "@/lib/store/dashboard-store";
 
 export function GuardrailAlerts() {
-  const alerts = useDashboardStore(useShallow(selectGuardrailAlerts));
+  const allAlerts = useDashboardStore((s) => s.alerts);
+  const alerts = useMemo(
+    () => filterGuardrailAlerts(allAlerts),
+    [allAlerts],
+  );
 
   if (alerts.length === 0) return null;
 
@@ -35,7 +42,7 @@ export function GuardrailAlerts() {
         {alerts.slice(0, 5).map((alert) => (
           <li
             key={alert.id}
-            className="panel-inset px-4 py-3 border-l-2 border-l-[var(--guard)]"
+            className="panel-inset border-l-2 border-l-[var(--guard)] px-4 py-3"
           >
             <p className="text-sm font-medium text-[var(--text-primary)]">
               {alert.title}

@@ -1,3 +1,5 @@
+"use client";
+
 import { create } from "zustand";
 import type {
   Alert,
@@ -144,24 +146,27 @@ export const useDashboardStore = create<DashboardState>((set) => ({
   },
 }));
 
-export const selectGuardrailAlerts = (s: DashboardState) =>
-  s.alerts.filter((a) => a.source === "guardrail");
+/** Pure helpers — use with useMemo in components (avoids unstable selector refs). */
+export function filterGuardrailAlerts(alerts: Alert[]) {
+  return alerts.filter((a) => a.source === "guardrail");
+}
 
-export const selectOpenAlerts = (s: DashboardState) =>
-  s.alerts.filter(
+export function filterOpenAlerts(alerts: Alert[]) {
+  return alerts.filter(
     (a) => a.status === "open" || a.status === "pending_human",
   );
+}
 
-export const selectEscalationStats = (s: DashboardState) => {
-  const signals = s.alerts.length;
-  const escalations = s.alerts.filter((a) => a.requiresHuman).length;
-  const pending = s.alerts.filter((a) => a.status === "pending_human").length;
-  return { signals, escalations, pending };
-};
+export function computeEscalationStats(alerts: Alert[]) {
+  return {
+    signals: alerts.length,
+    escalations: alerts.filter((a) => a.requiresHuman).length,
+    pending: alerts.filter((a) => a.status === "pending_human").length,
+  };
+}
 
 export function useActiveInvestigation(): Investigation | null {
-  return useDashboardStore((s) => {
-    const id = s.activeInvestigationId;
-    return id ? (s.investigations[id] ?? null) : null;
-  });
+  const id = useDashboardStore((s) => s.activeInvestigationId);
+  const investigations = useDashboardStore((s) => s.investigations);
+  return id ? (investigations[id] ?? null) : null;
 }

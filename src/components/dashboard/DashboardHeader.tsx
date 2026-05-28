@@ -1,11 +1,15 @@
 "use client";
 
-import { useDashboardStore, selectEscalationStats } from "@/lib/store/dashboard-store";
-import { useShallow } from "zustand/react/shallow";
+import { useMemo } from "react";
+import {
+  computeEscalationStats,
+  useDashboardStore,
+} from "@/lib/store/dashboard-store";
 
 export function DashboardHeader() {
   const connected = useDashboardStore((s) => s.connected);
-  const stats = useDashboardStore(useShallow(selectEscalationStats));
+  const alerts = useDashboardStore((s) => s.alerts);
+  const stats = useMemo(() => computeEscalationStats(alerts), [alerts]);
 
   return (
     <header className="relative z-10 border-b border-[var(--border-subtle)] bg-[var(--bg-elevated)]">

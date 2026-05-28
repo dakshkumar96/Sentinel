@@ -1,10 +1,10 @@
 "use client";
 
-import { useShallow } from "zustand/react/shallow";
+import { useMemo } from "react";
 import type { Alert } from "@/types";
 import {
-  selectEscalationStats,
-  selectOpenAlerts,
+  computeEscalationStats,
+  filterOpenAlerts,
   useDashboardStore,
 } from "@/lib/store/dashboard-store";
 
@@ -90,8 +90,8 @@ function AlertRow({
 
 export function AlertsPanel() {
   const alerts = useDashboardStore((s) => s.alerts);
-  const openAlerts = useDashboardStore(useShallow(selectOpenAlerts));
-  const stats = useDashboardStore(useShallow(selectEscalationStats));
+  const openAlerts = useMemo(() => filterOpenAlerts(alerts), [alerts]);
+  const stats = useMemo(() => computeEscalationStats(alerts), [alerts]);
   const activeInvestigationId = useDashboardStore((s) => s.activeInvestigationId);
   const gateAlertId = useDashboardStore((s) => s.gateAlertId);
   const selectInvestigation = useDashboardStore((s) => s.selectInvestigation);
