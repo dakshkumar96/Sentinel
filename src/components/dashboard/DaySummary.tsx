@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { computeDaySummary, type AdvertiserHealth } from "@/lib/spend/day-summary";
 import { CLIENT_ACCENT, formatGbp } from "@/lib/format";
 import { useDashboardStore } from "@/lib/store/dashboard-store";
+import { DaySummaryCharts } from "./DaySummaryCharts";
 
 const HEALTH_LABEL: Record<AdvertiserHealth, string> = {
   calm: "On track",
@@ -125,6 +126,11 @@ export function DaySummary() {
           hint="AI-channel book"
         />
       </div>
+
+      <DaySummaryCharts
+        portfolioHourly={summary.portfolioHourly}
+        advertiserChart={summary.advertiserChart}
+      />
 
       <div className="border-t border-[var(--border-subtle)] px-4 pb-4 sm:px-5 sm:pb-5">
         <p className="py-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--text-muted)]">

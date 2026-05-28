@@ -1,4 +1,4 @@
-import { healthTone } from "@/lib/spend/metrics";
+import { emptyHourlyBuckets, healthTone, HOURLY_BUCKETS } from "@/lib/spend/metrics";
 import type { Alert, Client, Placement } from "@/types";
 import type { PlacementLiveState } from "@/types/stream";
 
@@ -18,6 +18,20 @@ export interface AdvertiserDayRow {
   health: AdvertiserHealth;
 }
 
+export interface HourlyPortfolioPoint {
+  label: string;
+  spendGbp: number;
+}
+
+export interface AdvertiserChartPoint {
+  name: string;
+  shortName: string;
+  spend: number;
+  budget: number;
+  budgetPct: number;
+  health: AdvertiserHealth;
+}
+
 export interface DaySummary {
   dateLabel: string;
   totalSpendGbp: number;
@@ -29,8 +43,36 @@ export interface DaySummary {
   openAlerts: number;
   pendingHuman: number;
   advertisers: AdvertiserDayRow[];
+  portfolioHourly: HourlyPortfolioPoint[];
+  advertiserChart: AdvertiserChartPoint[];
   headline: string;
   subline: string;
+}
+
+export function aggregatePortfolioHourly(
+  placements: Placement[],
+  states: Record<string, PlacementLiveState>,
+): HourlyPortfolioPoint[] {
+  const totals = emptyHourlyBuckets();
+  for (const p of placements) {
+    const buckets = states[p.id]?.hourlyBuckets ?? [];
+    for (let i = 0; i < HOURLY_BUCKETS; i++) {
+      totals[i] += buckets[i] ?? 0;
+    }
+  }
+
+  const nowHour = new Date().getHours();
+  return totals.map((spendGbp, i) => {
+    const hoursAgo = HOURLY_BUCKETS - 1 - i;
+    const hour = (nowHour - hoursAgo + 24) % 24;
+    const label = `${hour.toString().padStart(2, "0")}:00`;
+    return { label, spendGbp: Math.round(spendGbp * 10) / 10 };
+  });
+}
+
+function shortAdvertiserName(name: string): string {
+  const first = name.split(/\s+/)[0] ?? name;
+  return first.length > 12 ? `${first.slice(0, 11)}…` : first;
 }
 
 const HEALTH_RANK: Record<AdvertiserHealth, number> = {
@@ -119,6 +161,16 @@ export function computeDaySummary(
 
   const subline = `${clients.length} advertisers · ${placements.length} AI placements · ${budgetPct}% of combined daily budget used`;
 
+  const portfolioHourly = aggregatePortfolioHourly(placements, states);
+  const advertiserChart: AdvertiserChartPoint[] = advertisers.map((a) => ({
+    name: a.name,
+    shortName: shortAdvertiserName(a.name),
+    spend: Math.round(a.spendGbp),
+    budget: a.budgetGbp,
+    budgetPct: a.budgetPct,
+    health: a.health,
+  }));
+
   return {
     dateLabel,
     totalSpendGbp,
@@ -130,6 +182,8 @@ export function computeDaySummary(
     openAlerts: openAlerts.length,
     pendingHuman,
     advertisers,
+    portfolioHourly,
+    advertiserChart,
     headline,
     subline,
   };
