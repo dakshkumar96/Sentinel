@@ -1,0 +1,20 @@
+[
+  {
+    "id": "acme_retail",
+    "name": "Acme Retail",
+    "tier": "standard",
+    "dailyBudgetGbp": 2000
+  },
+  {
+    "id": "northwind_travel",
+    "name": "Northwind Travel",
+    "tier": "enterprise",
+    "dailyBudgetGbp": 8000
+  },
+  {
+    "id": "contoso_fintech",
+    "name": "Contoso Fintech",
+    "tier": "standard",
+    "dailyBudgetGbp": 1500
+  }
+]

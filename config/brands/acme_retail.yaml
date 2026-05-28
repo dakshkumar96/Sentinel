@@ -1,0 +1,12 @@
+client_id: acme_retail
+name: Acme Retail
+tone: upbeat, family-friendly, value-conscious
+never_associate_with:
+  - layoffs_and_job_loss
+  - grief_and_bereavement
+  - political_conflict
+  - explicit_adult_content
+approved_claims:
+  - free_delivery_over_50
+  - student_discount_10pct
+creative_notes: Avoid urgency language during sensitive news cycles.

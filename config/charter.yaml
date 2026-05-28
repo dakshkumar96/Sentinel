@@ -1,0 +1,56 @@
+# Sentinel autonomy charter — hard limits vs agent judgment
+# Hard limits: enforced by guardrails (no LLM)
+# Soft policy: read by agent + escalation engine
+
+version: "0.1"
+
+guardrails:
+  # Global — cannot be overridden by agent
+  absolute_daily_cap_gbp: 10000
+  blocklisted_conversation_topics:
+    - self_harm
+    - minors
+    - explicit_politics
+
+  auto_pause:
+    on_hard_cap: true
+    notify_channels: [dashboard, email_stub]
+
+agent:
+  may:
+    - investigate_anomaly
+    - recommend_pause
+    - recommend_scale_down
+    - log_healthy_spike
+  may_not:
+    - override_hard_cap
+    - exceed_client_daily_budget
+    - act_on_brand_safety_when_confidence_below: 0.8
+
+escalation:
+  # Meta-decision: when to pull a human
+  always_escalate_if:
+    - confidence_below: 0.75
+    - client_tier: enterprise
+    - estimated_exposure_gbp_above: 500
+    - brand_safety_verdict: ambiguous
+
+  auto_act_if:
+    - confidence_above: 0.9
+    - client_tier: standard
+    - recommended_action: pause
+    - exposure_gbp_below: 200
+
+clients:
+  acme_retail:
+    tier: standard
+    daily_budget_gbp: 2000
+    brand_risk: medium
+  northwind_travel:
+    tier: enterprise
+    daily_budget_gbp: 8000
+    brand_risk: high
+  contoso_fintech:
+    tier: standard
+    daily_budget_gbp: 1500
+    brand_risk: high

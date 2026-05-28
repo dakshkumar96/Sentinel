@@ -1,0 +1,16 @@
+[
+  {
+    "id": "plc_chatgpt_acme_01",
+    "clientId": "acme_retail",
+    "channel": "chatgpt",
+    "name": "Acme — ChatGPT Shopping",
+    "status": "active"
+  },
+  {
+    "id": "plc_thrad_north_01",
+    "clientId": "northwind_travel",
+    "channel": "thrad_publisher",
+    "name": "Northwind — Thrad Travel Intent",
+    "status": "active"
+  }
+]
