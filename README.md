@@ -1,5 +1,7 @@
 # Sentinel
 
+https://sentinel-1wjm4vyac-dakhs-projects.vercel.app/
+
 **Agentic spend guardian for AI-channel advertising.**
 
 Sentinel monitors live ad spend across AI channels (ChatGPT, Thrad, Claude Apps), detects anomalies in real time, runs autonomous Claude-powered investigations, and escalates decisions to human operators — all in a single real-time dashboard built for ad operations teams.
@@ -238,18 +240,6 @@ src/
     index.ts                Client, Placement, Alert, Investigation, SpendEvent
     stream.ts               StreamMessage discriminated union
 ```
-
----
-
-## Deploy
-
-1. Push to GitHub
-2. [vercel.com/new](https://vercel.com/new) → Import repo
-3. Root directory: `.`
-4. Add env vars (optional): `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL`
-5. Deploy — `main` branch auto-deploys
-
----
 
 ## Troubleshooting
 
