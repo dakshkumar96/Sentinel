@@ -20,6 +20,7 @@ export type StreamMessage =
       clients: Client[];
       placements: Placement[];
       states: PlacementLiveState[];
+      agentEngine: "claude" | "mock";
     }
   | { type: "spend"; event: SpendEvent; state: PlacementLiveState }
   | { type: "alert"; alert: Alert }

@@ -17,15 +17,15 @@ import {
 } from "recharts";
 
 const CHART = {
-  accent: "#c96442",
-  accentSoft: "rgba(201, 100, 66, 0.15)",
-  grid: "rgba(28, 25, 23, 0.08)",
-  axis: "#78716c",
-  budget: "#ebe6de",
+  accent: "#2563eb",
+  accentSoft: "rgba(37, 99, 235, 0.15)",
+  grid: "#eef2f7",
+  axis: "#9ca3af",
+  budget: "#cbd5e1",
   spend: {
-    calm: "#2d7a4f",
-    elevated: "#b8860b",
-    critical: "#c44c4c",
+    calm: "#10b981",
+    elevated: "#f59e0b",
+    critical: "#ef4444",
   },
 } as const;
 
@@ -36,13 +36,14 @@ function spendColor(health: AdvertiserChartPoint["health"]): string {
 const tooltipProps = {
   contentStyle: {
     background: "#ffffff",
-    border: "1px solid rgba(28, 25, 23, 0.1)",
+    border: "1px solid #e5e7eb",
     borderRadius: "12px",
     fontSize: "12px",
-    boxShadow: "0 4px 20px rgba(28, 25, 23, 0.08)",
+    fontFamily: "var(--font-inter), sans-serif",
+    boxShadow: "0 4px 12px rgba(17, 24, 39, 0.06)",
   },
-  labelStyle: { color: "#57534e", fontWeight: 600 },
-  itemStyle: { color: "#1c1917" },
+  labelStyle: { color: "#6b7280", fontWeight: 600 },
+  itemStyle: { color: "#111827", fontFamily: "var(--font-inter), sans-serif" },
 };
 
 interface DaySummaryChartsProps {
@@ -56,8 +57,12 @@ export function DaySummaryCharts({
 }: DaySummaryChartsProps) {
   return (
     <div className="grid gap-4 border-t border-[var(--border-subtle)] p-4 sm:grid-cols-2 sm:p-5">
-      <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-4">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--text-muted)]">
+      <div
+        className="relative overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-white p-4"
+        style={{ boxShadow: "var(--shadow-sm)" }}
+      >
+        <div className="card-shimmer" />
+        <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--text-muted)]">
           Portfolio spend (today)
         </p>
         <p className="mt-0.5 text-xs text-[var(--text-muted)]">
@@ -65,13 +70,10 @@ export function DaySummaryCharts({
         </p>
         <div className="mt-4 h-[200px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart
-              data={portfolioHourly}
-              margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
-            >
+            <AreaChart data={portfolioHourly} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="spendGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={CHART.accent} stopOpacity={0.35} />
+                  <stop offset="0%" stopColor={CHART.accent} stopOpacity={0.30} />
                   <stop offset="100%" stopColor={CHART.accent} stopOpacity={0.02} />
                 </linearGradient>
               </defs>
@@ -102,15 +104,19 @@ export function DaySummaryCharts({
                 strokeWidth={2}
                 fill="url(#spendGradient)"
                 dot={false}
-                activeDot={{ r: 4, fill: CHART.accent }}
+                activeDot={{ r: 4, fill: CHART.accent, strokeWidth: 0 }}
               />
             </AreaChart>
           </ResponsiveContainer>
         </div>
       </div>
 
-      <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-4">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--text-muted)]">
+      <div
+        className="relative overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-white p-4"
+        style={{ boxShadow: "var(--shadow-sm)" }}
+      >
+        <div className="card-shimmer" />
+        <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--text-muted)]">
           Spend vs daily budget
         </p>
         <p className="mt-0.5 text-xs text-[var(--text-muted)]">
@@ -150,18 +156,12 @@ export function DaySummaryCharts({
                 ]}
               />
               <Legend
-                wrapperStyle={{ fontSize: "11px", paddingTop: "8px" }}
+                wrapperStyle={{ fontSize: "11px", paddingTop: "8px", color: CHART.axis }}
                 formatter={(value) =>
                   value === "spend" ? "Spend today" : "Daily budget"
                 }
               />
-              <Bar
-                dataKey="budget"
-                name="budget"
-                fill={CHART.budget}
-                radius={[4, 4, 0, 0]}
-                maxBarSize={32}
-              />
+              <Bar dataKey="budget" name="budget" fill={CHART.budget} radius={[4, 4, 0, 0]} maxBarSize={32} />
               <Bar dataKey="spend" name="spend" radius={[4, 4, 0, 0]} maxBarSize={32}>
                 {advertiserChart.map((entry) => (
                   <Cell key={entry.name} fill={spendColor(entry.health)} />

@@ -23,9 +23,9 @@ export const CHANNEL_STYLE: Record<
     line: "from-[var(--accent)]/45 to-transparent",
   },
   thrad_publisher: {
-    dot: "bg-[var(--blue)]",
+    dot: "bg-[var(--indigo)]",
     chip: "bg-[var(--bg-elevated)] text-[var(--text-secondary)] border-[var(--border-subtle)]",
-    line: "from-[var(--blue)]/45 to-transparent",
+    line: "from-[var(--indigo)]/45 to-transparent",
   },
   other: {
     dot: "bg-[var(--text-muted)]",
@@ -54,7 +54,7 @@ export function statusLabel(status: Placement["status"]): string {
 }
 
 export const CLIENT_ACCENT = [
-  "border-l-[var(--accent-strong)]",
+  "border-l-[var(--accent)]",
+  "border-l-[var(--indigo)]",
   "border-l-[var(--green)]",
-  "border-l-[var(--blue)]",
 ] as const;

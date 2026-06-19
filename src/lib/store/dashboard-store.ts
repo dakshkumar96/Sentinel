@@ -21,6 +21,8 @@ interface DashboardState {
   activeInvestigationId: string | null;
   gateAlertId: string | null;
   scenarioLoading: DemoScenarioId | null;
+  investigating: boolean;
+  agentEngine: "claude" | "mock";
   setConnected: (connected: boolean) => void;
   selectInvestigation: (id: string | null) => void;
   openGate: (alertId: string) => void;
@@ -33,6 +35,13 @@ interface DashboardState {
 
 const MAX_ALERTS = 50;
 
+const AGENT_SCENARIO_IDS: DemoScenarioId[] = [
+  "healthy_spike",
+  "bad_spike",
+  "brand_safety",
+  "zero_conv_burn",
+];
+
 export const useDashboardStore = create<DashboardState>((set) => ({
   connected: false,
   clients: [],
@@ -43,6 +52,8 @@ export const useDashboardStore = create<DashboardState>((set) => ({
   activeInvestigationId: null,
   gateAlertId: null,
   scenarioLoading: null,
+  investigating: false,
+  agentEngine: "mock",
   setConnected: (connected) => set({ connected }),
   selectInvestigation: (id) => set({ activeInvestigationId: id }),
   openGate: (alertId) => {
@@ -65,7 +76,8 @@ export const useDashboardStore = create<DashboardState>((set) => ({
     }));
   },
   runScenario: async (id) => {
-    set({ scenarioLoading: id });
+    const isAgentScenario = AGENT_SCENARIO_IDS.includes(id);
+    set({ scenarioLoading: id, investigating: isAgentScenario });
     try {
       await fetch("/api/demo/scenario", {
         method: "POST",
@@ -92,6 +104,8 @@ export const useDashboardStore = create<DashboardState>((set) => ({
           investigations: {},
           activeInvestigationId: null,
           gateAlertId: null,
+          agentEngine: msg.agentEngine,
+          investigating: false,
         });
         break;
       case "spend":
@@ -106,6 +120,7 @@ export const useDashboardStore = create<DashboardState>((set) => ({
             [msg.investigation.id]: msg.investigation,
           },
           activeInvestigationId: msg.investigation.id,
+          investigating: false,
         }));
         break;
       case "alert":

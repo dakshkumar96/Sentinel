@@ -74,6 +74,7 @@ class IngestHub {
       clients: this.clients,
       placements: [...this.placements],
       states: [...this.states.values()],
+      agentEngine: hasClaudeApiKey() ? "claude" : "mock",
     };
   }
 

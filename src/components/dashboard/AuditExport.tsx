@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-export function AuditExport() {
+export function AuditExport({ compact = false }: { compact?: boolean }) {
   const [loading, setLoading] = useState(false);
 
   const exportLog = async () => {
@@ -24,12 +24,12 @@ export function AuditExport() {
     }
   };
 
-  return (
+  const button = (
     <button
       type="button"
       disabled={loading}
       onClick={exportLog}
-      className="btn-ghost flex w-full items-center justify-center gap-2 py-2.5 text-xs font-medium disabled:opacity-50"
+      className="btn-ghost flex w-full items-center justify-center gap-2 py-2.5 text-[12px] font-medium disabled:opacity-50"
     >
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
         <path
@@ -42,5 +42,22 @@ export function AuditExport() {
       </svg>
       {loading ? "Exporting…" : "Export audit log"}
     </button>
+  );
+
+  if (compact) return button;
+
+  return (
+    <div className="panel p-4">
+      <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--text-muted)]">
+        Compliance
+      </p>
+      <h2 className="font-display mt-1 text-[15px] font-semibold text-[var(--text-primary)]">
+        Audit export
+      </h2>
+      <p className="mt-1 text-[12px] text-[var(--text-muted)]">
+        Download full trail — alerts, investigations, actions.
+      </p>
+      <div className="mt-4">{button}</div>
+    </div>
   );
 }
