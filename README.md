@@ -2,8 +2,6 @@
 
 Agentic spend guardian for AI-channel advertising — built for agencies.
 
-**Status:** Hackathon demo complete — live dashboard, charter guardrails, agent (Claude or mock), HITL slide-over, audit export.
-
 ## Dashboard features
 
 | Feature | What you see |
